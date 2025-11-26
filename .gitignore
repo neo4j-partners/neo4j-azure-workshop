@@ -142,3 +142,6 @@ fabric.properties
 # Extraction cache (LLM results)
 .extraction_cache/
 
+# Financial data (Neo4j backup files)
+financial-data/
+
