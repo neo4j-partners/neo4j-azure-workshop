@@ -18,7 +18,7 @@
 | Resource | Purpose |
 |----------|---------|
 | **Azure AI Foundry Project** | Hosts the AI agent and model deployments |
-| **Azure AI Services** | Provides GPT-5 chat and text-embedding-ada-002 embedding models |
+| **Azure AI Services** | Provides GPT-4o chat and text-embedding-ada-002 embedding models |
 | **Azure Container Apps** | Hosts the FastAPI application |
 | **Azure Container Registry** | Stores Docker images for deployment |
 | **Azure Storage Account** | Required by AI Foundry for agent state |
@@ -27,7 +27,7 @@
 
 ### AI Agent
 
-- A persistent agent named `arches-agent` (configurable) using `gpt-5`
+- A persistent agent named `arches-agent` (configurable) using `gpt-4o`
 - Server-managed conversation threads stored in Azure AI Foundry
 - System instructions defining agent behavior
 
@@ -123,7 +123,7 @@ flowchart LR
 
 | Model | Type | SKU | Purpose |
 |-------|------|-----|---------|
-| `gpt-5` | OpenAI | GlobalStandard | Chat completion for agent |
+| `gpt-4o` | OpenAI | GlobalStandard | Chat completion for agent |
 | `text-embedding-ada-002` | OpenAI | GlobalStandard | Embeddings for semantic search |
 
 ### Security & RBAC
@@ -167,7 +167,7 @@ from agent_framework.azure import AzureAIAgentClient
 # Create client connected to Foundry project
 client = AzureAIAgentClient(
     project_endpoint="https://<region>.api.azureml.ms/agents/v1.0/subscriptions/.../projects/...",
-    model_deployment_name="gpt-5",
+    model_deployment_name="gpt-4o",
     async_credential=AzureCliCredential()
 )
 
@@ -354,7 +354,7 @@ Currently threads are stored in memory (a Python dictionary). This means:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `AZURE_AI_AGENT_NAME` | `arches-agent` | Name of the agent |
-| `AZURE_AI_MODEL_NAME` | `gpt-5` | Model deployment name |
+| `AZURE_AI_MODEL_NAME` | `gpt-4o` | Model deployment name |
 | `AZURE_AI_EMBEDDING_NAME` | - | Embedding model deployment |
 | `AZURE_OPENAI_ENDPOINT` | - | Azure OpenAI endpoint for embeddings |
 | `NEO4J_URI` | - | Neo4j connection URI |

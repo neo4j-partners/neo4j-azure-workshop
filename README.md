@@ -12,50 +12,29 @@ For GitHub Codespaces or Local Dev Container setup, see **[GUIDE_DEV_CONTAINERS.
 ## Prerequisites (Manual Setup)
 
 *   **[uv](https://github.com/astral-sh/uv):** An extremely fast Python package installer and resolver.
-*   **[Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd):** For infrastructure provisioning.
+*   **[Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd):** For infrastructure provisioning (`azd login`).
 *   **[Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli):** For authentication (`az login`).
 *   **Git**
 
 ## Getting Started
 
-### 1. Create Environment and Set Region
-Create an azd environment and set the region. Azure AI Foundry Agent Service only supports select regions.
+### 1. Configure Azure Region
+Run the setup script to select your Azure region and initialize the environment:
 
 ```bash
-# Create a new environment
-azd env new mydev
-
-# Set region (REQUIRED)
-azd env set AZURE_LOCATION eastus2
+./scripts/setup_azure.sh
 ```
 
 > **Supported Regions:** `eastus2`, `swedencentral`, or `westus2`
 
-### 2. Set Up Resource Group (Optional)
-This project can deploy to an existing resource group or create a new one. You need Contributor access on the resource group (not the entire subscription).
-
-```bash
-# Option A: Use an existing resource group (workshop scenario)
-azd env set AZURE_RESOURCE_GROUP <your-existing-rg-name>
-
-# Option B: Let azd create a new resource group (will prompt during azd up)
-```
-
-### 3. Provision Infrastructure
-Deploy the Azure resources (AI Foundry Project, Container App, Managed Identity) into your resource group.
+### 2. Provision Infrastructure
+Deploy the Azure AI resources:
 
 ```bash
 azd up
 ```
 
-### Managing Multiple Environments
-
-```bash
-azd env list              # List all environments
-azd env select <name>     # Switch to a different environment
-azd env get-values        # Show current environment's variables
-azd env new <name>        # Create a new environment
-```
+> **Note:** For full deployment options (including Container App), see [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md).
 
 #### Load Financial Data into Neo4j (Optional)
 Load structured CSV data into Neo4j to enable graph-based queries:
@@ -70,21 +49,21 @@ This loads `financial-data/Asset_Manager_Holdings.csv` and `financial-data/Compa
 
 The script reads Neo4j credentials from `.env` automatically. Requires `cypher-shell` CLI (`brew install cypher-shell`).
 
-### 4. Install Dependencies
+### 3. Install Dependencies
 Use `uv` to sync dependencies defined in `pyproject.toml`.
 
 ```bash
 uv sync --prerelease=allow
 ```
 
-### 5. Setup Environment Variables
+### 4. Setup Environment Variables
 Run the helper script to pull environment variables from `azd` and create a local `.env` file.
 
 ```bash
 uv run setup_env.py
 ```
 
-### 6. Run Locally
+### 5. Run Locally
 
 #### Run using uv (recommended for development)
 ```bash
@@ -187,7 +166,7 @@ curl -X POST http://localhost:8000/search/semantic \
     *   `test_server.py`: API test script
 *   `infra/`: Azure Bicep infrastructure files
 *   `scripts/`: Helper scripts
-    *   `setup_azure.sh`: Interactive setup for Azure environment and region
+    *   `setup_azure.sh`: Select Azure region (eastus2, swedencentral, or westus2)
     *   `load_data.sh`: Load structured CSV data into Neo4j
 *   `financial-data/`: Sample financial data for Neo4j graph
     *   `Asset_Manager_Holdings.csv`: Asset manager stock holdings
@@ -195,3 +174,14 @@ curl -X POST http://localhost:8000/search/semantic \
 *   `pyproject.toml`: Python dependency configuration
 *   `ARCHITECTURE.md`: Detailed architecture documentation
 *   `AGENT_FRAMEWORK.md`: Agent Framework migration notes
+
+## Additional Documentation
+
+| Document | Description |
+|----------|-------------|
+| [GUIDE_DEV_CONTAINERS.md](GUIDE_DEV_CONTAINERS.md) | GitHub Codespaces and Dev Container setup |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Detailed architecture and design decisions |
+| [AGENT_FRAMEWORK.md](AGENT_FRAMEWORK.md) | Microsoft Agent Framework integration notes |
+| [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md) | Azure deployment options (workshop vs full) |
+| [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) | Azure CLI reference commands |
+| [docs/observability.md](docs/observability.md) | Monitoring and observability setup |

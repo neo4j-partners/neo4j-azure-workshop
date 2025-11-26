@@ -188,7 +188,7 @@ The pipeline loads configuration from the project root `.env` file.
 | Variable | Description |
 |----------|-------------|
 | `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL |
-| `AZURE_AI_MODEL_NAME` | Chat model deployment (e.g., gpt-5) |
+| `AZURE_AI_MODEL_NAME` | Chat model deployment (e.g., gpt-4o) |
 | `AZURE_AI_EMBEDDING_NAME` | Embedding model deployment (e.g., text-embedding-ada-002) |
 | `NEO4J_URI` | Neo4j connection URI |
 | `NEO4J_USERNAME` | Neo4j username |
@@ -259,7 +259,7 @@ The SimpleKGPipeline creates the following schema:
 ### Processing
 
 ```
-pipeline_starting        pdf_directory=financial-data/form10k-sample llm_model=gpt-5
+pipeline_starting        pdf_directory=financial-data/form10k-sample llm_model=gpt-4o
 files_to_process         count=1
 vector_index_created     name=chunkEmbeddings dimensions=1536
 pipeline_initialized

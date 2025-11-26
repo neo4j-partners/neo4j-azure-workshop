@@ -16,7 +16,7 @@
    az login --use-device-code
    azd auth login --use-device-code
 
-   # Auto-detect resource group and location (workshop accounts)
+   # Select Azure region (eastus2, swedencentral, or westus2)
    ./scripts/setup_azure.sh
 
    # Deploy
@@ -78,7 +78,7 @@ This project uses **resource-group-scoped deployment** - all Azure resources dep
 ```
 Your Resource Group
 ├── Azure AI Foundry Project (AI Hub + Project)
-├── Azure OpenAI Service (gpt-5 + text-embedding-ada-002)
+├── Azure OpenAI Service (gpt-4o + text-embedding-ada-002)
 ├── Storage Account
 ├── Container Registry
 ├── Container Apps Environment
@@ -125,7 +125,7 @@ Azure AI Foundry only works in these regions:
 
 **Fix**:
 ```bash
-# For workshop accounts, run the setup script (auto-detects from your resource group)
+# Run the setup script to select a supported region
 ./scripts/setup_azure.sh
 
 # Or set manually

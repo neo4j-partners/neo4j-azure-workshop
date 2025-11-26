@@ -25,12 +25,12 @@ param agentModelFormat string = 'OpenAI'
 @description('Name of agent to deploy')
 param agentName string = 'arches-agent'
 @description('Name of the chat model to deploy')
-param agentModelName string = 'gpt-5'
+param agentModelName string = 'gpt-4o'
 @description('Name of the model deployment')
-param agentDeploymentName string = 'gpt-5'
+param agentDeploymentName string = 'gpt-4o'
 
 @description('Version of the chat model to deploy')
-param agentModelVersion string = '2025-08-07'
+param agentModelVersion string = '2024-08-06'
 
 @description('Sku of the chat deployment')
 param agentDeploymentSku string = 'GlobalStandard'
@@ -57,6 +57,9 @@ param templateValidationMode bool = false
 
 @description('Skip role assignments (set to true on redeployment if you get RoleAssignmentExists errors)')
 param skipRoleAssignments bool = false
+
+@description('Deploy Container App infrastructure (set to true for production deployment)')
+param deployContainerApp bool = false
 
 @description('Random seed to be used during generation of new resources suffixes.')
 param seed string = newGuid()
@@ -131,7 +134,7 @@ var openAIEndpoint = ai.outputs.openAIEndpoint
 var aiProjectEndpoint = ai.outputs.aiProjectEndpoint
 
 // Container apps host (including container registry)
-module containerApps 'core/host/container-apps.bicep' = {
+module containerApps 'core/host/container-apps.bicep' = if (deployContainerApp) {
   name: 'container-apps'
   params: {
     name: 'app'
@@ -144,7 +147,7 @@ module containerApps 'core/host/container-apps.bicep' = {
 }
 
 // API app
-module api 'api.bicep' = {
+module api 'api.bicep' = if (deployContainerApp) {
   name: 'api'
   params: {
     name: 'ca-api-${resourceToken}'
@@ -190,7 +193,7 @@ module userAzureAIUser 'core/security/role.bicep' = if (!skipRoleAssignments) {
 }
 
 // Role assignments for the API backend (managed identity)
-module backendAzureAIUser 'core/security/role.bicep' = if (!skipRoleAssignments) {
+module backendAzureAIUser 'core/security/role.bicep' = if (!skipRoleAssignments && deployContainerApp) {
   name: 'backend-role-azure-ai-user'
   params: {
     principalType: 'ServicePrincipal'
@@ -199,7 +202,7 @@ module backendAzureAIUser 'core/security/role.bicep' = if (!skipRoleAssignments)
   }
 }
 
-module backendCognitiveServicesUser 'core/security/role.bicep' = if (!skipRoleAssignments) {
+module backendCognitiveServicesUser 'core/security/role.bicep' = if (!skipRoleAssignments && deployContainerApp) {
   name: 'backend-role-cognitive-services-user'
   params: {
     principalType: 'ServicePrincipal'
@@ -208,7 +211,7 @@ module backendCognitiveServicesUser 'core/security/role.bicep' = if (!skipRoleAs
   }
 }
 
-module backendRoleAzureAIDeveloper 'core/security/role.bicep' = if (!skipRoleAssignments) {
+module backendRoleAzureAIDeveloper 'core/security/role.bicep' = if (!skipRoleAssignments && deployContainerApp) {
   name: 'backend-role-azureai-developer'
   params: {
     principalType: 'ServicePrincipal'
@@ -228,10 +231,10 @@ output AZURE_AI_AGENT_NAME string = agentName
 // Legacy endpoint (for fallback or direct OpenAI access)
 output AZURE_OPENAI_ENDPOINT string = openAIEndpoint
 
-// Outputs required by azd for ACA
-output AZURE_CONTAINER_ENVIRONMENT_NAME string = containerApps.outputs.environmentName
-output SERVICE_API_IDENTITY_PRINCIPAL_ID string = api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
-output SERVICE_API_NAME string = api.outputs.SERVICE_API_NAME
-output SERVICE_API_URI string = api.outputs.SERVICE_API_URI
-output SERVICE_API_ENDPOINTS array = ['${api.outputs.SERVICE_API_URI}']
-output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerApps.outputs.registryLoginServer
+// Outputs required by azd for ACA (empty when deployContainerApp=false)
+output AZURE_CONTAINER_ENVIRONMENT_NAME string = deployContainerApp ? containerApps.outputs.environmentName : ''
+output SERVICE_API_IDENTITY_PRINCIPAL_ID string = deployContainerApp ? api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID : ''
+output SERVICE_API_NAME string = deployContainerApp ? api.outputs.SERVICE_API_NAME : ''
+output SERVICE_API_URI string = deployContainerApp ? api.outputs.SERVICE_API_URI : ''
+output SERVICE_API_ENDPOINTS array = deployContainerApp ? ['${api.outputs.SERVICE_API_URI}'] : []
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = deployContainerApp ? containerApps.outputs.registryLoginServer : ''
