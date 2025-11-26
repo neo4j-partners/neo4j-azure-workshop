@@ -2,7 +2,7 @@
 
 ## Option 1: GitHub Codespaces (Fastest)
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/neo4j-partners/foundry-agents)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/neo4j-partners/neo4j-azure-workshop)
 
 ### Setup Steps
 

@@ -88,7 +88,7 @@ def get_default_template() -> ERExtractionTemplate:
     Returns:
         Configured ERExtractionTemplate instance
     """
-    # pipeline/ -> data-pipeline/ -> foundry-agents/
+    # pipeline/ -> data-pipeline/ -> neo4j-azure-workshop/
     project_root = Path(__file__).parent.parent.parent
     csv_path = project_root / "financial-data" / "Company_Filings.csv"
 

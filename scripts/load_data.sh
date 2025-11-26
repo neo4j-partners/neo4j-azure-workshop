@@ -42,7 +42,7 @@ fi
 
 # Determine CSV base URL based on Neo4j connection type
 # Neo4j Aura (cloud) can't access file:// URLs, so use GitHub raw URLs
-GITHUB_RAW_URL="https://raw.githubusercontent.com/neo4j-partners/foundry-agents/refs/heads/main/financial-data"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/neo4j-partners/workshop-financial-data/refs/heads/main"
 
 if [[ "$NEO4J_URI" == *"neo4j+s://"* ]] || [[ "$NEO4J_URI" == *"databases.neo4j.io"* ]]; then
     CSV_BASE_URL="${CSV_BASE_URL:-$GITHUB_RAW_URL}"

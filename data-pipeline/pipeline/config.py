@@ -12,7 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 def get_project_root() -> Path:
     """Get the project root directory (parent of data-pipeline)."""
-    # config.py -> pipeline/ -> data-pipeline/ -> foundry-agents/
+    # config.py -> pipeline/ -> data-pipeline/ -> neo4j-azure-workshop/
     return Path(__file__).parent.parent.parent
 
 

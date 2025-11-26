@@ -1,5 +1,5 @@
 {
-    "name": "foundry-agents",
+    "name": "neo4j-azure-workshop",
     "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
     "forwardPorts": [8000],
     "features": {
