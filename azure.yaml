@@ -34,16 +34,32 @@ hooks:
         exit 1
       fi
       echo "Region '$AZURE_LOCATION' is supported for Azure AI Foundry Agent Service."
+  postprovision:
+    shell: sh
+    run: |
+      echo ""
+      echo "=========================================="
+      echo "  Provisioning complete!"
+      echo "=========================================="
+      echo ""
+      echo "For local development, run:"
+      echo "  uv run setup_env.py"
+      echo "  uv run uvicorn api.main:create_app --factory --reload"
+      echo ""
 
-services:
-  api:
-    project: .
-    language: py
-    host: containerapp
-    docker:
-      path: ./Dockerfile
-      image: api
-      remoteBuild: true
+# Services section - uncomment for Container App deployment
+# To deploy Container Apps, run: azd up --parameter deployContainerApp=true
+# and uncomment the services section below
+#
+# services:
+#   api:
+#     project: .
+#     language: py
+#     host: containerapp
+#     docker:
+#       path: ./Dockerfile
+#       image: api
+#       remoteBuild: true
 
 pipeline:
   variables:

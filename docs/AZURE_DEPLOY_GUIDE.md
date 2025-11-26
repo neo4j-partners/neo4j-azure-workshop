@@ -26,6 +26,22 @@ azd up
 
 To deploy the complete infrastructure including the Container App for production hosting:
 
+1. First, uncomment the `services` section in `azure.yaml`:
+
+```yaml
+services:
+  api:
+    project: .
+    language: py
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      image: api
+      remoteBuild: true
+```
+
+2. Then run:
+
 ```bash
 azd up --parameter deployContainerApp=true
 ```

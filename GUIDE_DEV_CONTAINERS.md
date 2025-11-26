@@ -16,12 +16,14 @@
    az login --use-device-code
    azd auth login --use-device-code
 
-   # Select Azure region (eastus2, swedencentral, or westus2)
+   # Select Azure region and initialize environment
    ./scripts/setup_azure.sh
 
    # Deploy
    azd up
    ```
+
+   > **Note:** The setup script clears the `.azure/` directory and Azure-related settings from `.env` to ensure a fresh deployment. Neo4j settings in `.env` are preserved. See [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) for details.
 
 4. **Follow the prompts:**
    ```
@@ -40,21 +42,25 @@
    uv run scripts/restore_neo4j.py
    ```
 
-6. **Choose your path:**
+6. **Setup environment:**
+   ```bash
+   uv run setup_env.py
+   ```
+
+7. **Choose your path:**
 
    **Path A: Workshop (Guided Notebooks)**
    Follow the step-by-step workshop guide in [`new-workshops/`](new-workshops/README.md)
 
    **Path B: Full Server (API Development)**
-   Continue with steps 7-8 below to run the complete API server.
+   Continue with steps 8-9 below to run the complete API server.
 
-7. **Setup and run:**
+8. **Run the server:**
    ```bash
-   uv run setup_env.py
    uv run uvicorn api.main:create_app --factory --reload
    ```
 
-8. **Test API:**
+9. **Test API:**
    ```bash
    # Basic test - check agent status
    uv run python src/test_server.py basic
@@ -135,15 +141,27 @@ azd up
 
 ### Previous Environment Cached
 
-**Cause**: `.azure/` folder has stale settings from a previous user/subscription.
+**Cause**: `.azure/` folder or `.env` file has stale settings from a previous deployment (e.g., a deleted resource group).
 
-**Fix**:
+**Fix**: Run the setup script, which clears stale config automatically:
 ```bash
-rm -rf .azure/
-az login
-azd env set AZURE_RESOURCE_GROUP <your-rg>
+./scripts/setup_azure.sh
 azd up
 ```
+
+Or manually:
+```bash
+# Remove Azure config from .env (keeps Neo4j settings)
+sed -i '' '/^AZURE_/d' .env
+sed -i '' '/^SERVICE_/d' .env
+
+rm -rf .azure/
+azd init -e myenv
+azd env set AZURE_LOCATION eastus2
+azd up
+```
+
+See [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) for details on why `azd init` picks up values from `.env`.
 
 ### API Won't Start
 
@@ -153,6 +171,35 @@ azd up
 ```bash
 uv run setup_env.py  # Re-pull from azd
 uv run uvicorn api.main:create_app --factory --reload
+```
+
+### Soft-Delete Error After Recreating Resources
+
+**Cause**: If you previously deployed and then deleted resources, Azure keeps Cognitive Services in a "soft-deleted" state for 90 days. Redeploying with the same environment name causes a conflict.
+
+**Error message**:
+```
+FlagMustBeSetForRestore: An existing resource with ID '...' has been soft-deleted.
+To restore the resource, you must specify 'restore' to be 'true' in the property.
+```
+
+**Fix**: Create a new environment with a different name:
+```bash
+# Remove the old environment
+rm -rf .azure/
+
+# Initialize with a new environment name
+azd init
+# Enter a NEW name when prompted (e.g., "workshop2", "mydev2")
+
+# Set the region
+./scripts/setup_azure.sh
+
+# Verify region is set correctly
+azd env get-values | grep AZURE_LOCATION
+
+# Deploy
+azd up
 ```
 
 ---

@@ -2,15 +2,26 @@
 
 These workshops demonstrate how to build AI agents using the Microsoft Agent Framework with Azure AI Foundry, integrated with Neo4j graph database capabilities via the neo4j-graphrag-python library.
 
-## Setup
+## Prerequisites
 
-This workshop uses the root `.env` file from the main project (created by `uv run setup_env.py`).
+Before running setup, ensure you have a `.env` file in the **project root** with the following variables:
+If using Azure deployment, you can generate this file with `uv run setup_env.py` from the project root.
 
-Install dependencies:
+## Quick Start
+
+Run the setup script to install dependencies, register the Jupyter kernel, and test connections:
+
 ```bash
 cd new-workshops
-uv sync --prerelease=allow
+./setup.sh
 ```
+
+This script will:
+1. Install [uv](https://github.com/astral-sh/uv) if not already installed
+2. Install Python dependencies
+3. Register a Jupyter kernel named "New Workshops (uv)"
+4. Test Neo4j and Azure AI connections
+
 
 ## Jupyter Notebooks
 

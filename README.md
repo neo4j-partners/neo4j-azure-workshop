@@ -25,6 +25,8 @@ Run the setup script to select your Azure region and initialize the environment:
 ./scripts/setup_azure.sh
 ```
 
+> **Note:** This script clears the `.azure/` directory and Azure-related settings from `.env` to ensure `azd up` creates a fresh environment. Neo4j settings in `.env` are preserved. See [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) for details on environment management.
+
 > **Supported Regions:** `eastus2`, `swedencentral`, or `westus2`
 
 ### 2. Provision Infrastructure
@@ -35,19 +37,6 @@ azd up
 ```
 
 > **Note:** For full deployment options (including Container App), see [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md).
-
-#### Load Financial Data into Neo4j (Optional)
-Load structured CSV data into Neo4j to enable graph-based queries:
-
-```bash
-./scripts/load_data.sh
-```
-
-This loads `financial-data/Asset_Manager_Holdings.csv` and `financial-data/Company_Filings.csv` into Neo4j, creating:
-- **Nodes:** `AssetManager`, `Company`, `Document`
-- **Relationships:** `OWNS` (AssetManager → Company), `FILED` (Company → Document)
-
-The script reads Neo4j credentials from `.env` automatically. Requires `cypher-shell` CLI (`brew install cypher-shell`).
 
 ### 3. Install Dependencies
 Use `uv` to sync dependencies defined in `pyproject.toml`.
@@ -63,9 +52,30 @@ Run the helper script to pull environment variables from `azd` and create a loca
 uv run setup_env.py
 ```
 
-### 5. Run Locally
+### 5. Restore Neo4j Database (Optional)
 
-#### Run using uv (recommended for development)
+> **Note:** If you're using a pre-provisioned workshop Neo4j database, this step is not needed—the data is already loaded.
+
+To restore the financial graph data to your own Neo4j instance:
+
+```bash
+uv run python scripts/restore_neo4j.py
+```
+
+This streams and restores the backup from GitHub, creating:
+- **Nodes:** `AssetManager`, `Company`, `Document`, `Chunk`
+- **Relationships:** `OWNS`, `FILED`, `HAS_CHUNK`
+
+The script reads Neo4j credentials (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`) from `.env` automatically.
+
+### 6. Choose Your Path
+
+**Path A: Workshop (Guided Notebooks)**
+Follow the step-by-step workshop guide in [`new-workshops/`](new-workshops/README.md)
+
+**Path B: Full Server (API Development)**
+Run the complete API server:
+
 ```bash
 uv run uvicorn api.main:create_app --factory --reload
 ```
@@ -74,106 +84,14 @@ The API will be available at `http://localhost:8000`.
 
 ## Testing the API
 
-Use the included test script to verify the API is working:
+Run all tests to verify the API is working:
 
-### Basic Test
-Check agent status and send a simple message:
-```bash
-uv run python src/test_server.py basic
-```
-
-### Streaming Test
-Test the streaming endpoint:
-```bash
-uv run python src/test_server.py stream
-```
-
-### Memory Test (default)
-Test conversation memory across multiple messages:
-```bash
-uv run python src/test_server.py memory
-```
-
-### Semantic Search Test
-Test semantic/vector search over the graph database (requires Neo4j + Azure OpenAI):
-```bash
-uv run python src/test_server.py semantic
-```
-
-### Entity Search Test
-Test entity listing and relationship queries (requires Neo4j):
-```bash
-uv run python src/test_server.py entities
-```
-
-### Run All Tests
-Run all tests including agent, streaming, memory, semantic search, and entity search:
 ```bash
 uv run python src/test_server.py all
 ```
 
-## API Endpoints
+For individual test options and API endpoint details, see [docs/SERVER_OVERVIEW.md](docs/SERVER_OVERVIEW.md).
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/agent` | GET | Get agent status and configuration |
-| `/chat` | POST | Send a message to the agent |
-| `/chat/stream` | POST | Send a message with streaming response |
-| `/search/schema` | GET | Get the graph database schema |
-| `/search/semantic` | POST | Perform semantic/vector search |
-| `/search/entities/types` | GET | Get available entity types |
-| `/search/entities/{type}` | GET | List entities of a specific type |
-| `/search/entities/{name}/relationships` | GET | Get relationships for an entity |
-
-### Example API Calls
-
-```bash
-# Get entity types
-curl http://localhost:8000/search/entities/types
-
-# List companies
-curl "http://localhost:8000/search/entities/Company?limit=10"
-
-# Get relationships for an entity
-curl "http://localhost:8000/search/entities/Apple/relationships?limit=10"
-
-# Semantic search
-curl -X POST http://localhost:8000/search/semantic \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What are the risk factors?", "top_k": 5}'
-```
-
-## Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `AZURE_AI_PROJECT_ENDPOINT` | Yes | Azure AI Foundry project endpoint |
-| `AZURE_AI_MODEL_NAME` | No | Model deployment name |
-| `AZURE_AI_EMBEDDING_NAME` | No | Embedding model deployment (default: text-embedding-ada-002) |
-| `AZURE_AI_AGENT_NAME` | No | Agent name (default: arches-agent) |
-| `NEO4J_URI` | No | Neo4j connection URI (for graph features) |
-| `NEO4J_USERNAME` | No | Neo4j username |
-| `NEO4J_PASSWORD` | No | Neo4j password |
-| `NEO4J_VECTOR_INDEX_NAME` | No | Neo4j vector index name (default: chunkEmbeddings) |
-
-**Note:** Semantic search uses Azure AI Foundry embeddings with Azure CLI credentials (`az login`). No API keys required.
-
-## Project Structure
-
-*   `src/`: Python source code
-    *   `api/`: FastAPI application and routes
-    *   `agent.py`: Agent configuration and creation
-    *   `test_server.py`: API test script
-*   `infra/`: Azure Bicep infrastructure files
-*   `scripts/`: Helper scripts
-    *   `setup_azure.sh`: Select Azure region (eastus2, swedencentral, or westus2)
-    *   `load_data.sh`: Load structured CSV data into Neo4j
-*   `financial-data/`: Sample financial data for Neo4j graph
-    *   `Asset_Manager_Holdings.csv`: Asset manager stock holdings
-    *   `Company_Filings.csv`: Company SEC filing metadata
-*   `pyproject.toml`: Python dependency configuration
-*   `ARCHITECTURE.md`: Detailed architecture documentation
-*   `AGENT_FRAMEWORK.md`: Agent Framework migration notes
 
 ## Additional Documentation
 
@@ -183,5 +101,6 @@ curl -X POST http://localhost:8000/search/semantic \
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Detailed architecture and design decisions |
 | [AGENT_FRAMEWORK.md](AGENT_FRAMEWORK.md) | Microsoft Agent Framework integration notes |
 | [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md) | Azure deployment options (workshop vs full) |
+| [docs/SERVER_OVERVIEW.md](docs/SERVER_OVERVIEW.md) | API endpoints, testing options, environment variables |
 | [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) | Azure CLI reference commands |
 | [docs/observability.md](docs/observability.md) | Monitoring and observability setup |

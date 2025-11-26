@@ -29,7 +29,7 @@
             ]
         }
     },
-    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && export PATH=\"$HOME/.local/bin:$PATH\" && uv sync --prerelease=allow",
+    "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && export PATH=\"$HOME/.local/bin:$PATH\" && uv sync --prerelease=allow && cd new-workshops && uv sync --prerelease=allow && uv run python -m ipykernel install --user --name new-workshops --display-name 'New Workshops (uv)'",
     "postStartCommand": "bash scripts/start_dev_container.sh",
     "remoteUser": "vscode",
     "hostRequirements": {
