@@ -4,16 +4,13 @@ These workshops demonstrate how to build AI agents using the Microsoft Agent Fra
 
 ## Setup
 
-1. Copy `.env.example` to `.env` and fill in your values:
-   ```bash
-   cp .env.example .env
-   ```
+This workshop uses the root `.env` file from the main project (created by `uv run setup_env.py`).
 
-2. Install dependencies:
-   ```bash
-   cd new-workshops
-   uv sync --prerelease=allow
-   ```
+Install dependencies:
+```bash
+cd new-workshops
+uv sync --prerelease=allow
+```
 
 ## Jupyter Notebooks
 
@@ -108,7 +105,6 @@ These workshops use:
 new-workshops/
 ├── pyproject.toml          # Dependencies using uv
 ├── README.md               # This file
-├── .env.example            # Environment variable template
 ├── notebooks/              # Jupyter notebooks for interactive learning
 │   ├── 01_01_vector_retriever.ipynb
 │   ├── 01_02_vector_cypher_retriever.ipynb

@@ -6,6 +6,7 @@ Azure AI Foundry integration, and configuration management.
 """
 
 from contextlib import contextmanager
+from pathlib import Path
 
 from azure.identity import DefaultAzureCredential
 from dotenv import load_dotenv
@@ -15,7 +16,9 @@ from neo4j_graphrag.llm import OpenAILLM
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-load_dotenv()
+# Load .env from project root (parent of new-workshops/)
+_root_env = Path(__file__).parent.parent.parent / ".env"
+load_dotenv(_root_env)
 
 
 class Neo4jConfig(BaseSettings):

@@ -1,6 +1,6 @@
 # Dev Containers & Codespaces Quick Start Guide
 
-## Option 1: GitHub Codespaces (Fastest)
+## GitHub Codespaces (Cloud) or Local Dev Container (Local Setup)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/neo4j-partners/neo4j-azure-workshop)
 
@@ -8,23 +8,22 @@
 
 1. **Click the badge above** (or go to repo → Code → Codespaces → New)
 
-2. **Resource Group prompt appears:**
-   - **Workshop participants:** Enter your assigned resource group (find it at [Azure Portal](https://portal.azure.com) → search "Resource groups")
-   - **Individual users:** Leave blank - you can create one during `azd up`
+2. **Wait for container to build** (~3 minutes)
 
-3. **Wait for container to build** (~3 minutes)
-
-4. **Run in terminal:**
+3. **Run in terminal:**
    ```bash
    # Authenticate with Azure
    az login --use-device-code
    azd auth login --use-device-code
 
+   # Auto-detect resource group and location (workshop accounts)
+   ./scripts/setup_azure.sh
+
    # Deploy
    azd up
    ```
 
-5. **Follow the prompts:**
+4. **Follow the prompts:**
    ```
    ? Enter a unique environment name: mydev
    ? Select an Azure Subscription: 1. Your Subscription
@@ -35,51 +34,34 @@
    - **Environment name:** Any word (e.g., `mydev`, `workshop`)
    - **Resource group:** Select your existing RG, or choose "Create a new resource group"
 
----
-
-## Option 2: Local Dev Container
-
-### Prerequisites
-- Docker Desktop running
-- VS Code with Dev Containers extension
-
-### Setup Steps
-
-1. **Open in Dev Container**
-   - Open project in VS Code
-   - Click "Reopen in Container" when prompted (or `Cmd+Shift+P` → "Reopen in Container")
-   - Wait ~3 minutes for container to build
-
-2. **Run in terminal:**
+5. **Restore Neo4j database (non-workshop only):**
+   If you're not in a workshop with a pre-populated Neo4j database, restore the sample data:
    ```bash
-   # Authenticate with Azure
-   az login
-   azd auth login
-
-   # Deploy
-   azd up
+   uv run scripts/restore_neo4j.py
    ```
 
-3. **Follow the prompts:**
-   - `Enter a unique environment name:` → Any word (e.g., `mydev`)
-   - `Select an Azure Subscription:` → Pick yours
-   - `Pick a resource group:` → Select existing or "Create a new resource group"
+6. **Choose your path:**
 
-4. **Setup and run:**
+   **Path A: Workshop (Guided Notebooks)**
+   Follow the step-by-step workshop guide in [`new-workshops/`](new-workshops/README.md)
+
+   **Path B: Full Server (API Development)**
+   Continue with steps 7-8 below to run the complete API server.
+
+7. **Setup and run:**
    ```bash
    uv run setup_env.py
    uv run uvicorn api.main:create_app --factory --reload
    ```
 
-5. **Test API:**
+8. **Test API:**
    ```bash
-   curl http://localhost:8000/agent
-   ```
+   # Basic test - check agent status
+   uv run python src/test_server.py basic
 
-### Expected Results
-- `azd up` should complete without permission errors
-- All Azure resources deploy to your specified resource group
-- API responds with agent metadata at `/agent`
+   # Run all tests (agent, streaming, memory, semantic search, entities)
+   uv run python src/test_server.py all
+   ```
 
 ---
 
@@ -108,28 +90,6 @@ Your Resource Group
 
 ---
 
-## For Workshop Organizers
-
-### Pre-create Resource Groups
-
-```bash
-# Create resource group for a participant
-az group create --name rg-workshop-user1 --location eastus
-
-# Grant Contributor access
-az role assignment create \
-  --assignee user1@example.com \
-  --role Contributor \
-  --scope /subscriptions/<subscription-id>/resourceGroups/rg-workshop-user1
-```
-
-### Provide to Participants
-- Resource group name
-- Subscription ID (for `az login`)
-- This guide
-
----
-
 ## For Individual Users
 
 ### Create Your Own Resource Group
@@ -149,45 +109,28 @@ azd up
 ```
 
 ### Supported Regions
-- eastus
-- eastus2
+
+Azure AI Foundry only works in these regions:
+- eastus2 (Recommended)
 - swedencentral
-- westus
-- westus3
+- westus2
 
 ---
 
 ## Troubleshooting
 
-### "RoleAssignmentExists" Error
+### Region Not Supported Error
 
-**Cause**: You're redeploying and role assignments already exist from a previous deployment.
-
-**Fix**: Skip role assignments on redeployment:
-```bash
-azd env set SKIP_ROLE_ASSIGNMENTS true
-azd up
-```
-
-This is safe because the roles were already assigned on your first deployment. This skips all 10 role assignments across the infrastructure.
-
-### "AuthorizationFailed" Error
-
-**Cause**: You don't have Contributor access on the resource group.
-
-**Fix**: Ask your admin to grant access, or create your own resource group if you have subscription access.
-
-### "Resource group not found"
-
-**Cause**: The resource group doesn't exist or you mistyped the name.
+**Cause**: `AZURE_LOCATION` is not set or set to an unsupported region.
 
 **Fix**:
 ```bash
-# List your resource groups
-az group list --output table
+# For workshop accounts, run the setup script (auto-detects from your resource group)
+./scripts/setup_azure.sh
 
-# Set the correct name
-azd env set AZURE_RESOURCE_GROUP <correct-name>
+# Or set manually
+azd env set AZURE_LOCATION eastus2
+azd up
 ```
 
 ### Previous Environment Cached

@@ -1,109 +1,54 @@
 #!/bin/bash
-# Setup script for Azure AI Foundry workshop
-# Creates an azd environment with a supported region
+# Auto-detect resource group and location for workshop accounts
+# Run this after: az login --use-device-code && azd auth login --use-device-code
 
 set -e
 
-echo ""
-echo "=== Azure AI Foundry Workshop Setup ==="
-echo ""
+echo "Detecting Azure resource groups..."
 
-# Check if azd is installed
-if ! command -v azd &> /dev/null; then
-    echo "Error: Azure Developer CLI (azd) is not installed."
-    echo "Install it from: https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd"
+# Get list of resource groups as JSON
+RG_JSON=$(az group list --query "[].{name:name, location:location}" -o json 2>/dev/null)
+
+if [ -z "$RG_JSON" ] || [ "$RG_JSON" == "[]" ]; then
+    echo "❌ No resource groups found. Are you logged in?"
+    echo "   Run: az login --use-device-code"
     exit 1
 fi
 
-# Check if logged in
-if ! azd auth login --check-status &> /dev/null; then
-    echo "You need to log in to Azure first."
-    echo "Running: azd auth login --use-device-code"
-    echo ""
-    azd auth login --use-device-code
-fi
+# Count resource groups
+RG_COUNT=$(echo "$RG_JSON" | jq length)
 
-# Get environment name
-echo "Enter a name for your environment (e.g., mydev, workshop1):"
-read -p "> " ENV_NAME
+if [ "$RG_COUNT" -eq 1 ]; then
+    # Only one resource group - auto-configure
+    RG_NAME=$(echo "$RG_JSON" | jq -r '.[0].name')
+    RG_LOCATION=$(echo "$RG_JSON" | jq -r '.[0].location')
 
-if [ -z "$ENV_NAME" ]; then
-    echo "Error: Environment name cannot be empty."
-    exit 1
-fi
+    echo "✅ Found single resource group: $RG_NAME (location: $RG_LOCATION)"
 
-# Select region
-echo ""
-echo "Select a region for Azure AI Foundry:"
-echo ""
-echo "  1) East US 2      (eastus2)       - Recommended"
-echo "  2) Sweden Central (swedencentral)"
-echo "  3) West US 2      (westus2)"
-echo ""
-read -p "Enter choice [1-3]: " REGION_CHOICE
-
-case $REGION_CHOICE in
-    1)
-        REGION="eastus2"
-        ;;
-    2)
-        REGION="swedencentral"
-        ;;
-    3)
-        REGION="westus2"
-        ;;
-    *)
-        echo "Invalid choice. Defaulting to eastus2."
-        REGION="eastus2"
-        ;;
-esac
-
-# Resource group option
-echo ""
-echo "Resource group setup:"
-echo ""
-echo "  1) Create a new resource group (azd will prompt for name)"
-echo "  2) Use an existing resource group"
-echo ""
-read -p "Enter choice [1-2]: " RG_CHOICE
-
-RESOURCE_GROUP=""
-if [ "$RG_CHOICE" = "2" ]; then
-    echo ""
-    echo "Enter the existing resource group name:"
-    read -p "> " RESOURCE_GROUP
-    if [ -z "$RESOURCE_GROUP" ]; then
-        echo "Error: Resource group name cannot be empty."
-        exit 1
+    # Initialize azd environment if needed
+    if ! azd env list 2>/dev/null | grep -q "default"; then
+        echo "Creating azd environment..."
+        azd init -e workshop 2>/dev/null || true
     fi
-fi
 
-echo ""
-echo "Creating environment '$ENV_NAME' in region '$REGION'..."
-echo ""
+    azd env set AZURE_RESOURCE_GROUP "$RG_NAME"
+    azd env set AZURE_LOCATION "$RG_LOCATION"
+    azd env set SKIP_ROLE_ASSIGNMENTS true
 
-# Create environment
-azd env new "$ENV_NAME"
-
-# Set the region
-azd env set AZURE_LOCATION "$REGION"
-
-# Set resource group if specified
-if [ -n "$RESOURCE_GROUP" ]; then
-    azd env set AZURE_RESOURCE_GROUP "$RESOURCE_GROUP"
-fi
-
-echo ""
-echo "=== Setup Complete ==="
-echo ""
-echo "Environment:     $ENV_NAME"
-echo "Region:          $REGION"
-if [ -n "$RESOURCE_GROUP" ]; then
-echo "Resource Group:  $RESOURCE_GROUP"
+    echo ""
+    echo "✅ Azure configured! Settings:"
+    echo "   AZURE_RESOURCE_GROUP=$RG_NAME"
+    echo "   AZURE_LOCATION=$RG_LOCATION"
+    echo ""
+    echo "Ready to deploy! Run:"
+    echo "   azd up"
 else
-echo "Resource Group:  (will be created during deploy)"
+    # Multiple resource groups - show options
+    echo "Found $RG_COUNT resource groups:"
+    echo ""
+    echo "$RG_JSON" | jq -r '.[] | "  - \(.name) (\(.location))"'
+    echo ""
+    echo "Please set manually:"
+    echo "   azd env set AZURE_RESOURCE_GROUP <name>"
+    echo "   azd env set AZURE_LOCATION <location>"
 fi
-echo ""
-echo "Next step - deploy to Azure:"
-echo "  azd up"
-echo ""
