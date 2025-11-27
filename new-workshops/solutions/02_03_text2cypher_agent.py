@@ -17,6 +17,7 @@ from neo4j_graphrag.schema import get_schema
 from pydantic import Field
 
 from agent_framework.azure import AzureAIAgentClient
+from azure.identity import DefaultAzureCredential
 from azure.identity.aio import AzureCliCredential
 
 from config import get_neo4j_driver, get_agent_config, get_embedder
@@ -26,6 +27,7 @@ RETRIEVAL_QUERY = """
 MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
 WITH node, score, company, collect(risk.name) as risks
+WHERE score IS NOT NULL
 RETURN
     node.text as text,
     score,
@@ -58,7 +60,6 @@ def create_tools(driver):
     embedder = get_embedder()
 
     # LLM for Cypher generation uses same Azure AI Foundry endpoint
-    from azure.identity import DefaultAzureCredential
     credential = DefaultAzureCredential()
     token = credential.get_token("https://cognitiveservices.azure.com/.default")
     cypher_llm = OpenAILLM(

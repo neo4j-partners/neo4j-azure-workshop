@@ -17,42 +17,23 @@ clean_env_file() {
         echo ""
         echo "Found existing Azure configuration in .env that may conflict with new deployment."
 
-        # Check for Neo4j settings
+        # Check for Neo4j settings and preserve them
         if grep -qE '^NEO4J_' "$ENV_FILE" 2>/dev/null; then
-            echo ""
-            echo "WARNING: Your .env file contains Neo4j settings that will be preserved:"
-            grep '^NEO4J_' "$ENV_FILE" | sed 's/=.*/=***/' | sed 's/^/  /'
-            echo ""
-            read -p "Remove Azure config but KEEP Neo4j settings? [Y/n]: " keep_neo4j
-            keep_neo4j=${keep_neo4j:-Y}
+            # Extract Neo4j settings
+            grep '^NEO4J_' "$ENV_FILE" > "$ENV_FILE.neo4j.tmp"
 
-            if [[ "$keep_neo4j" =~ ^[Yy]$ ]]; then
-                # Extract Neo4j settings
-                grep '^NEO4J_' "$ENV_FILE" > "$ENV_FILE.neo4j.tmp"
-                # Extract any comments at the top (user config section)
-                head -n 10 "$ENV_FILE" | grep '^#' > "$ENV_FILE.header.tmp" || true
-
-                # Rebuild .env with only Neo4j settings
-                cat > "$ENV_FILE" << 'EOF'
+            # Rebuild .env with only Neo4j settings
+            cat > "$ENV_FILE" << 'EOF'
 # ============================================
 # User Configuration
 # ============================================
 # Neo4j Connection (configure these manually)
 
 EOF
-                cat "$ENV_FILE.neo4j.tmp" >> "$ENV_FILE"
-                rm -f "$ENV_FILE.neo4j.tmp" "$ENV_FILE.header.tmp"
+            cat "$ENV_FILE.neo4j.tmp" >> "$ENV_FILE"
+            rm -f "$ENV_FILE.neo4j.tmp"
 
-                echo "Removed stale Azure config from .env (Neo4j settings preserved)"
-            else
-                read -p "Remove ALL settings from .env including Neo4j? [y/N]: " remove_all
-                if [[ "$remove_all" =~ ^[Yy]$ ]]; then
-                    rm -f "$ENV_FILE"
-                    echo "Removed .env file"
-                else
-                    echo "Keeping .env unchanged - deployment may fail if resource group doesn't exist"
-                fi
-            fi
+            echo "Removed stale Azure config from .env (Neo4j settings preserved)"
         else
             # No Neo4j settings, safe to clean Azure config
             echo "Cleaning stale Azure configuration from .env..."
@@ -69,7 +50,8 @@ echo "  1) East US 2 (eastus2)"
 echo "  2) Sweden Central (swedencentral)"
 echo "  3) West US 2 (westus2)"
 echo ""
-read -p "Select a region [1-3]: " choice
+read -p "Select a region [1-3] (default: 1): " choice
+choice=${choice:-1}
 
 case $choice in
     1) REGION="eastus2" ;;

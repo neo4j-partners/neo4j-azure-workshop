@@ -24,9 +24,8 @@ If you need to manually reset your environment:
 
 ```bash
 # Remove Azure config from .env (keeps Neo4j settings)
-sed -i '' '/^AZURE_/d' .env
-sed -i '' '/^SERVICE_/d' .env
-sed -i '' '/^EMBEDDING_/d' .env
+./scripts/setup_azure.sh
+
 
 # Remove azd environment directory
 rm -rf .azure

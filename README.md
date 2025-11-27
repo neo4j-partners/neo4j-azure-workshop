@@ -1,6 +1,14 @@
-# Simple AI Agents (API Only)
+# Neo4j and Azure Foundry AI Workshop
 
-This is an API-only implementation of an AI Agent using Python, FastAPI, and the **Microsoft Agent Framework (2025)** with **Azure AI Foundry**. It demonstrates how to build AI agents with conversation memory.
+This repository provides three ways to learn and build AI agents with Neo4j GraphRAG and the **Microsoft Agent Framework (2025)** with **Azure AI Foundry**:
+
+1. **Interactive Workshops** ([`new-workshops/`](new-workshops/README.md)) - Jupyter notebooks and Python solutions covering retriever patterns (vector search, vector-cypher, text2cypher) and agent development with tools for schema retrieval, graph traversal, and natural language to Cypher.
+
+2. **Complete API Server** ([`src/`](src/)) - Production-ready FastAPI application exposing REST endpoints for agent status, chat, and streaming chat, using `AzureAIAgentClient` for persistent agents hosted in Azure AI Foundry.
+
+3. **Data Pipeline** (optional) ([`data-pipeline/`](data-pipeline/README.md)) - Document processing pipeline using neo4j-graphrag-python's `SimpleKGPipeline` to parse PDFs, chunk text, generate vector embeddings, extract entities and relationships via LLM, and store everything in Neo4j as a queryable knowledge graph.
+
+> **Note:** The data pipeline is optional. The restore command in Step 5 below loads the complete pre-processed database, so you can skip the pipeline and start with the workshops or API server immediately.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/neo4j-partners/neo4j-azure-workshop)
 [![Open in Dev Containers](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/neo4j-partners/neo4j-azure-workshop)

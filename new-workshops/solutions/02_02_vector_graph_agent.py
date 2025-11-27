@@ -25,6 +25,7 @@ RETRIEVAL_QUERY = """
 MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
 WITH node, score, company, collect(risk.name) as risks
+WHERE score IS NOT NULL
 RETURN
     node.text as text,
     score,
