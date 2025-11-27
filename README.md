@@ -81,8 +81,8 @@ The script reads Neo4j credentials (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWO
 **Path A: Workshop (Guided Notebooks)**
 Follow the step-by-step workshop guide in [`new-workshops/`](new-workshops/README.md)
 
-**Path B: Full Server (API Development)**
-Run the complete API server:
+**Path B: AI Agent API Server**
+Run the AI agent API server with Neo4j GraphRAG integration:
 
 ```bash
 uv run uvicorn api.main:create_app --factory --reload
@@ -90,9 +90,9 @@ uv run uvicorn api.main:create_app --factory --reload
 
 The API will be available at `http://localhost:8000`.
 
-## Testing the API
+## Testing the AI Agent API
 
-Run all tests to verify the API is working:
+Run all tests to verify the AI agent endpoints are working:
 
 ```bash
 uv run python src/test_server.py all
