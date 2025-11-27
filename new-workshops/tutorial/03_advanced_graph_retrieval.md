@@ -446,7 +446,7 @@ Text2Cypher excels at complex relationships:
 **Generated Cypher:**
 ```cypher
 MATCH (c1:Company {name: "NVIDIA"})-[:FACES_RISK]->(r:RiskFactor)
-      <-[:FACES_RISK]-(c2:Company)
+MATCH (c2:Company)-[:FACES_RISK]->(r)
 WHERE c1 <> c2
 RETURN DISTINCT c2.name AS company, 
        collect(DISTINCT r.name) AS shared_risks

@@ -406,7 +406,8 @@ from pydantic import Field, validator
 class ChatRequest(BaseModel):
     message: str = Field(..., max_length=4000)
     
-    @validator("message")
+    @field_validator("message")
+    @classmethod
     def validate_message(cls, v):
         if contains_malicious_content(v):
             raise ValueError("Invalid input")
