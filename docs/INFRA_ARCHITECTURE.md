@@ -55,14 +55,18 @@ The infrastructure is defined in Bicep templates under `infra/` and deployed via
 
 ```
 infra/
+├── abbreviations.json            # Resource naming abbreviations
 ├── main.bicep                    # Entry point - orchestrates all resources
 ├── main.parameters.json          # Default parameter values
 ├── api.bicep                     # Container App for the API
 └── core/
     ├── host/
-    │   ├── ai-environment.bicep      # AI Foundry + Storage + Monitoring
-    │   ├── container-apps.bicep      # Container Apps Environment + Registry
-    │   └── container-app.bicep       # Individual container app
+    │   ├── ai-environment.bicep          # AI Foundry + Storage + Monitoring
+    │   ├── container-apps.bicep          # Container Apps Environment + Registry
+    │   ├── container-apps-environment.bicep  # Container Apps Environment config
+    │   ├── container-app.bicep           # Individual container app
+    │   ├── container-app-upsert.bicep    # Container app create/update logic
+    │   └── container-registry.bicep      # Azure Container Registry
     ├── ai/
     │   └── cognitiveservices.bicep   # AI Services + model deployments
     ├── monitor/
@@ -71,7 +75,8 @@ infra/
     ├── storage/
     │   └── storage-account.bicep     # Storage for AI Foundry
     └── security/
-        └── role.bicep                # RBAC role assignments
+        ├── role.bicep                # RBAC role assignments
+        └── registry-access.bicep     # Container registry access roles
 ```
 
 ### Infrastructure Deployment Diagram
