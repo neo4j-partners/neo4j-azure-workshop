@@ -40,7 +40,6 @@ This tutorial provides an in-depth comparison between two powerful agent framewo
 
 ✅ You need **.NET support** alongside Python  
 ✅ **Complex workflow orchestration** is required (graph-based execution)  
-✅ Graph-based execution flows with edges and nodes are needed  
 ✅ **Enterprise Azure integration** is a priority  
 ✅ You need **time-travel debugging** and checkpointing capabilities  
 ✅ Strong typing and protocol descriptors are important  
@@ -132,9 +131,11 @@ from strands import Agent
 from strands.tools import tool
 
 @tool
-def calculator(expression: str) -> float:
-    """Calculate mathematical expressions"""
-    return eval(expression)
+def calculator(a: float, b: float, operation: str) -> float:
+    """Calculate mathematical expressions safely"""
+    ops = {"+": lambda x, y: x + y, "-": lambda x, y: x - y,
+           "*": lambda x, y: x * y, "/": lambda x, y: x / y}
+    return ops[operation](a, b)
 
 # Simple agent creation
 agent = Agent(
@@ -287,9 +288,11 @@ from strands.tools.mcp import MCPClient
 from mcp import StdioServerParameters, stdio_client
 
 @tool
-def calculator(expression: str) -> float:
-    """Calculate mathematical expressions"""
-    return eval(expression)
+def calculator(a: float, b: float, operation: str) -> float:
+    """Calculate mathematical expressions safely"""
+    ops = {"+": lambda x, y: x + y, "-": lambda x, y: x - y,
+           "*": lambda x, y: x * y, "/": lambda x, y: x / y}
+    return ops[operation](a, b)
 
 @tool  
 def web_search(query: str) -> list:
