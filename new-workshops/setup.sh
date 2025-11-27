@@ -28,7 +28,7 @@ echo
 
 # Register Jupyter kernel
 echo "Registering Jupyter kernel..."
-uv run python -m ipykernel install --user --name neo4j-workshops --display-name 'Neo4j AI Workshop (uv)'
+uv run python -m ipykernel install --user --name neo4j-jupyter-kernel --display-name 'neo4j-jupyter-kernel'
 echo "Jupyter kernel registered successfully"
 echo
 

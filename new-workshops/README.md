@@ -19,7 +19,7 @@ cd new-workshops
 This script will:
 1. Install [uv](https://github.com/astral-sh/uv) if not already installed
 2. Install Python dependencies
-3. Register a Jupyter kernel named "Neo4j AI Workshop (uv)"
+3. Register a Jupyter kernel named "neo4j-jupyter-kernel"
 4. Test Neo4j and Azure AI connections
 
 > **Important (Codespaces/Dev Containers):** After running `setup.sh`, you must **refresh your browser** (or run "Developer: Reload Window" from the command palette) for VS Code to detect the new Jupyter kernel.
