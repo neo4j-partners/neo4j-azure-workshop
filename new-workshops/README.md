@@ -71,6 +71,20 @@ cd new-workshops
 uv run jupyter notebook notebooks/
 ```
 
+### Selecting the Jupyter Kernel (VS Code)
+
+When opening a notebook in VS Code, you need to select the correct Jupyter kernel:
+
+1. Click **Select Kernel** in the top-right corner of the notebook
+
+![Select Kernel](../images/select_kernel.png)
+
+2. Choose **Jupyter Kernel...** from the dropdown
+
+3. Select **neo4j-jupyter-kernel** from the list
+
+![Jupyter Kernel](../images/jupyter_kernel.png)
+
 ## Python Solutions
 
 Complete Python scripts are available in the `solutions/` directory:
