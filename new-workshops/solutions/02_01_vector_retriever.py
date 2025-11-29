@@ -31,8 +31,8 @@ def demo_vector_search(retriever: VectorRetriever, query: str) -> None:
     results = retriever.search(query_text=query, top_k=10)
     for item in results.items:
         score = item.metadata.get("score", 0)
-        content_preview = item.content[:100] if item.content else ""
-        print(f"Score: {score:.4f}, Content: {content_preview}...")
+        content = item.content if item.content else ""
+        print(f"Score: {score:.4f}, Content: {content}")
 
 
 def demo_rag_search(llm, retriever: VectorRetriever, query: str) -> None:

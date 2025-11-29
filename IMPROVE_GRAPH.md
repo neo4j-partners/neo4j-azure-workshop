@@ -25,31 +25,48 @@ Switch to the `neo4j-rust-ext` driver.
 ## 3. Explicit Indexing Strategy
 
 **Current State:**
-The pipeline relies on `SimpleKGPipeline` to manage some indexes, but explicit control ensures critical paths are optimized. The `FUTURE_ENHANCEMENTS.md` notes a need for fulltext indexes.
+The pipeline relies on `SimpleKGPipeline` to manage some indexes, but explicit control ensures critical paths are optimized.
 
 **Recommendation:**
 - **Entity Indexes:** Explicitly create `RANGE` or `TEXT` indexes on the `name` property for all entity labels (`Company`, `Executive`, etc.) *before* ingestion starts. This speeds up the `MERGE` (deduplication) operations during writing.
 - **Fulltext Index:** Implement the Fulltext index on `Chunk(text)` to enable Hybrid Search.
-- **Vector Index:** Ensure the vector index is pre-created with the correct dimensions (already largely handled, but verifying configuration is key).
+- **Vector Index:** Ensure the vector index is pre-created with the correct dimensions.
 
 ## 4. Optimized Entity Resolution
 
 **Current State:**
-`SimpleKGPipeline` runs entity resolution (simple name matching) effectively. `FUTURE_ENHANCEMENTS.md` notes a critical bug with duplicate entities causing crashes.
+`SimpleKGPipeline` runs entity resolution (simple name matching) inline after every file if `perform_entity_resolution=True` (default). This causes repeated, expensive global graph scans.
 
 **Recommendation:**
-- **Defer Resolution:** If possible, disable per-file resolution and run a global resolution step at the end of the batch. This reduces the overhead of constantly checking for duplicates during high-concurrency insertion.
-- **Fuzzy Matching:** Adopt the `FuzzyMatchResolver` (as planned) for better quality, but run it as a post-processing job, not inline, to avoid slowing down ingestion.
+- **Disable Inline Resolution:** Set `perform_entity_resolution=False` in the `SimpleKGPipeline` constructor.
+- **Global Resolution:** Run a single, global entity resolution step *once* after the entire batch of files has been processed. This eliminates redundant deduplication passes.
+- **Fuzzy Matching:** Adopt the `FuzzyMatchResolver` for the global resolution step to handle minor spelling variations (e.g. "Apple" vs "Apple Inc").
 
-## 5. Pipeline Component Configuration
+## 5. Pipeline Component Configuration (Batching)
 
 **Current State:**
-The code uses `SimpleKGPipeline` which abstracts away many settings.
+The code uses `SimpleKGPipeline` with default settings. The default `Neo4jWriter` uses a `batch_size` of 1000, which is often too small for high-throughput ingestion.
 
 **Recommendation:**
-If `SimpleKGPipeline` allows passing `batch_size` to the underlying `Neo4jWriter`, increase it (e.g., to 1000 or 5000) to reduce network round-trips to the database. If the abstraction prevents this, consider "ejecting" to the component-level API (composing `PdfLoader`, `LLMExtractor`, `Neo4jWriter` manually) for fine-grained control over:
-- `max_concurrency` for LLM calls.
-- `batch_size` for writes.
+Inject a custom `Neo4jWriter` with an increased batch size to reduce network round-trips.
+
+```python
+from neo4j_graphrag.experimental.components.kg_writer import Neo4jWriter
+
+# Create a custom writer
+kg_writer = Neo4jWriter(
+    driver=driver,
+    batch_size=5000,  # Increase from default 1000 to 5000
+    on_error="IGNORE"
+)
+
+# Inject into pipeline
+pipeline = SimpleKGPipeline(
+    ...,
+    kg_writer=kg_writer,
+    perform_entity_resolution=False  # Defer resolution
+)
+```
 
 ## 6. Hybrid Search Implementation
 

@@ -145,8 +145,7 @@ def find_chunks_for_entity(driver, entity_name: str) -> None:
         result = session.run("""
             MATCH (c:Chunk)-[:FROM_CHUNK]->(e)
             WHERE e.name CONTAINS $name
-            RETURN e.name as entity, labels(e)[0] as type,
-                   substring(c.text, 0, 100) as chunk_preview
+            RETURN e.name as entity, labels(e)[0] as type, c.text as chunk_text
             LIMIT 5
         """, name=entity_name)
 
@@ -155,14 +154,13 @@ def find_chunks_for_entity(driver, entity_name: str) -> None:
             print(f"\nChunks mentioning '{entity_name}':")
             for record in records:
                 print(f"  Entity: {record['entity']} ({record['type']})")
-                print(f"  Chunk: {record['chunk_preview']}...")
+                print(f"  Chunk: {record['chunk_text']}")
         else:
             # Try reverse direction
             result = session.run("""
                 MATCH (e)-[:FROM_CHUNK]->(c:Chunk)
                 WHERE e.name CONTAINS $name
-                RETURN e.name as entity, labels(e)[0] as type,
-                       substring(c.text, 0, 100) as chunk_preview
+                RETURN e.name as entity, labels(e)[0] as type, c.text as chunk_text
                 LIMIT 5
             """, name=entity_name)
             records = list(result)
@@ -170,7 +168,7 @@ def find_chunks_for_entity(driver, entity_name: str) -> None:
                 print(f"\nChunks mentioning '{entity_name}':")
                 for record in records:
                     print(f"  Entity: {record['entity']} ({record['type']})")
-                    print(f"  Chunk: {record['chunk_preview']}...")
+                    print(f"  Chunk: {record['chunk_text']}")
             else:
                 print(f"\nNo chunks found mentioning '{entity_name}'")
 

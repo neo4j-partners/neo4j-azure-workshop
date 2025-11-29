@@ -154,7 +154,7 @@ def demo_search(driver, embedder) -> None:
         if results:
             record = results[0]
             print(f"Best match (score: {record['score']:.4f}):")
-            print(f"  {record['text'][:100]}...")
+            print(f"  {record['text']}")
 
 
 async def main():

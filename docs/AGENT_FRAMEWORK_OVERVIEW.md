@@ -1,101 +1,153 @@
-# Microsoft Agent Framework and Azure SDK Architecture
+# Microsoft Agent Framework
 
-This document explains how the Microsoft Agent Framework and Azure AI SDKs work together to create AI agents that run on Azure AI Foundry.
+This document provides an overview of the Microsoft Agent Framework, its architecture, capabilities, and how it integrates with Azure AI Foundry for agent registration, management, and observability.
 
-## Two Layer Architecture
+## What is the Microsoft Agent Framework?
 
-Building agents with Azure AI Foundry involves two distinct layers:
+The Microsoft Agent Framework is a comprehensive Python and .NET framework for building, orchestrating, and deploying AI agents and multi-agent systems. It is designed for production use with features for observability, state management, error handling, and distributed agent communication.
 
-1. **Azure SDKs (Low Level)**: Direct access to Azure AI Foundry APIs
-2. **Microsoft Agent Framework (High Level)**: Productivity layer built on top of the Azure SDKs
+The framework is **not** just a wrapper around Azure SDKs. It is a complete agent framework that can operate independently with any supported LLM provider. When used with Azure AI Foundry, it leverages the `azure-ai-projects` SDK to register and manage agents, enabling the monitoring and evaluation features available in the Azure AI Foundry portal.
 
-Both layers register agents in the Azure AI Foundry portal. The difference is the level of abstraction and convenience features provided.
+## Core Capabilities
 
-## Layer 1: Azure SDKs
+### Agent Abstractions
 
-The Azure SDKs provide direct access to Azure AI Foundry APIs. There are two versions:
+The framework provides a protocol-based agent system using Python structural typing. Any class that implements the agent protocol can function as an agent without requiring inheritance from a base class.
 
-### azure-ai-agents (V1)
+**Key agent types:**
 
-The original Agents SDK focused specifically on the Agents API.
+- **ChatAgent**: A simple text-based agent for straightforward conversational use cases
+- **BaseAgent**: An abstract base with lifecycle hooks for custom implementations
+- **Custom agents**: Any class implementing the `AgentProtocol` interface
 
-- Uses the thread/message/run model (similar to OpenAI Assistants)
-- Requires manual management of agent lifecycle
-- Requires manual handling of tool calls and outputs
-- Package: `azure-ai-agents`
+Agents support both synchronous (`run()`) and streaming (`run_stream()`) execution modes. The streaming mode provides real-time updates as the agent processes a request.
 
-### azure-ai-projects (V2)
+### Tool System
 
-The newer Azure AI Projects SDK that includes agents as part of a broader project concept.
+Tools are defined as plain Python functions using docstrings and type hints. The framework automatically converts these to JSON schemas for LLM function calling.
 
-- Uses the Responses API pattern
-- Provides project level features beyond just agents
-- Recommended path going forward
-- Package: `azure-ai-projects`
+**Built-in tool types:**
 
-When using these SDKs directly you must:
+- **AIFunction**: Decorator-based function tools (`@ai_function`)
+- **HostedCodeInterpreterTool**: Code execution in sandboxed environments
+- **HostedFileSearchTool**: File search across uploaded documents
+- **HostedWebSearchTool**: Web search integration
+- **MCPTool**: Model Context Protocol server integration
 
-- Create agents manually with JSON tool definitions
-- Create and manage threads explicitly
-- Poll for run completion
-- Handle tool calls by parsing JSON and submitting outputs
-- Clean up agents when done
+The framework handles tool invocation, timeout management, error recovery, and result formatting automatically.
 
-## Layer 2: Microsoft Agent Framework
+### Multi-Agent Orchestration
 
-The Microsoft Agent Framework is a productivity layer built on top of the Azure SDKs. It provides:
+The framework includes a graph-based workflow engine for orchestrating complex multi-agent scenarios.
 
-**Automatic Agent Lifecycle Management**
+**Orchestration patterns:**
 
-The framework creates agents when you enter an async context and cleans them up when you exit. You do not need to track agent IDs or call delete methods.
+- **Sequential**: Agents run in order, passing results between steps
+- **Concurrent**: Parallel execution with fan-in/fan-out patterns
+- **Group Chat**: Multi-agent discussion with AI-powered speaker selection
+- **Handoff**: Agent-to-agent transfers based on conversation context
+- **Magentic**: Advanced planning with task decomposition and dynamic routing
 
-**Simple Tool Definitions**
+Workflows support checkpointing for state persistence, event streaming for monitoring, and resumable execution.
 
-Tools can be defined as plain Python functions with docstrings. The framework automatically converts them to the JSON schema format required by the API.
+### Memory and Context
 
-**Built-in Streaming**
+The framework provides mechanisms for persistent memory and dynamic context injection.
 
-The `run_stream()` method provides async iteration over response chunks without manual SSE parsing.
+**Components:**
 
-**Thread Management**
+- **AgentThread**: Persistent conversation context across requests
+- **ChatMessageStore**: Interface for message persistence (in-memory, Redis, file-based)
+- **ContextProvider**: Dynamic injection of instructions, messages, and tools before agent execution
+- **AggregateContextProvider**: Combines multiple context providers
 
-The framework handles thread creation internally for simple cases. For multi-turn conversations you can use `get_new_thread()` and pass the thread to subsequent calls.
+### Middleware Pipeline
 
-**Multi-Provider Support**
+Three middleware types allow interception and modification at different points in the execution flow:
 
-The same framework patterns work across Azure AI Foundry, OpenAI, Anthropic, and other providers.
+- **AgentMiddleware**: Intercepts `agent.run()` calls
+- **ChatMiddleware**: Intercepts chat client requests to the LLM
+- **FunctionMiddleware**: Intercepts tool execution
 
-### Framework Clients for Azure
+Middleware can modify requests, filter responses, add logging, or terminate execution early.
 
-The framework provides two client classes for Azure AI Foundry:
+### Observability
 
-| Client | Wraps | SDK Version |
-|--------|-------|-------------|
-| `AzureAIAgentClient` | `azure.ai.agents.AgentsClient` | V1 |
-| `AzureAIClient` | `azure.ai.projects.AIProjectClient` | V2 |
+The framework has built-in OpenTelemetry integration for distributed tracing, metrics, and logging.
+
+**Features:**
+
+- Automatic span creation using GenAI semantic conventions
+- Token usage histograms and operation duration metrics
+- Chat message logging with timestamps
+- Pluggable exporters (OTLP, Azure Monitor, custom backends)
+
+When using Azure AI Foundry, traces and metrics flow to Application Insights for visualization in the portal.
+
+### Human-in-the-Loop
+
+The framework supports approval workflows for sensitive tool executions.
+
+**Content types:**
+
+- **FunctionApprovalRequestContent**: Agent requests user approval before executing a tool
+- **FunctionApprovalResponseContent**: User response (approve/reject)
+
+This enables interactive agent execution where humans can review and approve actions before they happen.
+
+## Provider Support
+
+The framework supports multiple LLM providers through a pluggable architecture.
+
+| Provider | Package | Description |
+|----------|---------|-------------|
+| OpenAI | `agent-framework` (core) | GPT models via OpenAI API |
+| Azure OpenAI | `agent-framework` (core) | GPT models via Azure endpoints |
+| Azure AI Foundry | `agent-framework-azure-ai` | Service-managed agents with portal integration |
+| Anthropic | `agent-framework-anthropic` | Claude models |
+| Copilot Studio | `agent-framework-copilotstudio` | Published copilots from Power Platform |
+| Agent-to-Agent | `agent-framework-a2a` | Microsoft Graph protocol for distributed agents |
+
+The same agent code works across providers with minimal changes. Switching from OpenAI to Azure AI Foundry requires only changing the client class.
+
+## Azure AI Foundry Integration
+
+When the framework is used with Azure AI Foundry, it leverages the `azure-ai-projects` SDK (V2) to provide additional capabilities:
+
+- **Agent Registration**: Agents appear in the Azure AI Foundry portal under your project
+- **Lifecycle Management**: The framework handles agent creation and cleanup automatically
+- **Server-Side State**: Threads and messages can be persisted to the Azure service
+- **Monitoring**: Traces and metrics flow to Application Insights
+- **Evaluation**: Agent runs can be analyzed using Azure AI evaluation tools
+
+The framework provides two client classes for Azure:
+
+| Client | SDK | Use Case |
+|--------|-----|----------|
+| `AzureAIAgentClient` | `azure-ai-agents` (V1) | Legacy Agents API |
+| `AzureAIClient` | `azure-ai-projects` (V2) | Current recommended path |
 
 This project uses `AzureAIClient` (V2) which aligns with current Microsoft documentation.
 
-## How Agents Get Registered
+### How Registration Works
 
-Both layers register agents in the Azure AI Foundry portal through the same underlying APIs. The registration happens when:
+When you create an agent using the framework with Azure AI Foundry:
 
-1. You call the agent creation method (either directly via SDK or through the framework)
-2. The SDK sends a request to Azure AI Foundry
+1. You call `client.create_agent()` which returns an async context manager
+2. Entering the context sends a creation request to Azure AI Foundry
 3. Azure AI Foundry creates the agent and returns an agent ID
-4. The agent appears in the Azure AI Foundry portal under your project
+4. The agent appears in the portal under your project
+5. Exiting the context automatically deletes the agent (cleanup)
 
-The framework handles steps 1-3 automatically when you enter the `create_agent()` context manager.
+You do not need to manage agent IDs or call delete methods manually.
 
-## Code References
+## Project Code Examples
 
-### Framework Usage (This Project)
+### Agent Client Creation
 
-The API uses the Microsoft Agent Framework with `AzureAIClient`:
+The API creates an `AzureAIClient` connected to Azure AI Foundry.
 
-**Agent Configuration and Client Creation**
-
-See `src/agent.py` lines 54-76:
+See `src/agent.py:54-76`:
 
 ```python
 def create_agent_client(config: AgentConfig, credential: AzureCliCredential) -> AzureAIClient:
@@ -107,9 +159,11 @@ def create_agent_client(config: AgentConfig, credential: AzureCliCredential) -> 
     return AzureAIClient(**client_kwargs)
 ```
 
-**Agent Context Creation**
+### Agent Context Creation
 
-See `src/agent.py` lines 79-94:
+Agents are created using an async context manager that handles lifecycle.
+
+See `src/agent.py:79-94`:
 
 ```python
 def create_agent_context(client: AzureAIClient, config: AgentConfig):
@@ -119,9 +173,11 @@ def create_agent_context(client: AzureAIClient, config: AgentConfig):
     )
 ```
 
-**Running the Agent with Streaming**
+### Streaming Execution
 
-See `src/api/routes.py` lines 93-96:
+The agent processes requests and streams responses.
+
+See `src/api/routes.py:93-96`:
 
 ```python
 async for update in agent.run_stream(chat_request.message, thread=thread, store=False):
@@ -129,13 +185,25 @@ async for update in agent.run_stream(chat_request.message, thread=thread, store=
         response_content += update.text
 ```
 
-### Workshop Examples
+### Tool Definition
 
-The workshop notebooks demonstrate the same patterns:
+Tools are Python functions with docstrings. The framework extracts the function name and docstring to create the tool schema.
 
-**Simple Agent**
+See `new-workshops/solutions/02_01_simple_agent.py:21-27`:
 
-See `new-workshops/solutions/02_01_simple_agent.py` lines 38-55:
+```python
+def create_schema_tool(driver):
+    def get_graph_schema() -> str:
+        """Get the schema of the graph database including node labels, relationships, and properties."""
+        return get_schema(driver)
+    return get_graph_schema
+```
+
+### Workshop Agent Pattern
+
+The workshop examples demonstrate a complete agent pattern.
+
+See `new-workshops/solutions/02_01_simple_agent.py:38-55`:
 
 ```python
 async with AzureCliCredential() as credential:
@@ -155,23 +223,9 @@ async with AzureCliCredential() as credential:
                 print(update.text, end="", flush=True)
 ```
 
-**Tool Definition**
+## Thread Management
 
-Tools are simple Python functions. See `new-workshops/solutions/02_01_simple_agent.py` lines 21-27:
-
-```python
-def create_schema_tool(driver):
-    def get_graph_schema() -> str:
-        """Get the schema of the graph database including node labels, relationships, and properties."""
-        return get_schema(driver)
-    return get_graph_schema
-```
-
-The framework reads the function name and docstring to create the tool definition that gets sent to Azure AI Foundry.
-
-## Thread Management Patterns
-
-### Single Turn (No Thread Needed)
+### Single Turn (Automatic Thread)
 
 For simple one-shot queries the framework creates a thread automatically:
 
@@ -182,7 +236,7 @@ async for update in agent.run_stream(query):
 
 ### Multi-Turn Conversations
 
-For conversations that span multiple requests you create and reuse a thread:
+For conversations spanning multiple requests, create and reuse a thread:
 
 ```python
 thread = agent.get_new_thread()
@@ -190,30 +244,34 @@ thread = agent.get_new_thread()
 # First message
 result1 = await agent.run("Hello", thread=thread, store=False)
 
-# Follow-up message (same thread maintains context)
+# Follow-up maintains context
 result2 = await agent.run("Tell me more", thread=thread, store=False)
 ```
 
-The `store=False` parameter keeps messages in memory only. Use `store=True` (default) to persist messages to the Azure service.
+The `store=False` parameter keeps messages in memory only. Use `store=True` (default) to persist messages to Azure AI Foundry.
 
-See `src/api/routes.py` lines 51-62 for the API implementation of multi-turn conversations.
+See `src/api/routes.py:51-62` for the API implementation of multi-turn conversations.
 
 ## Framework Source References
 
-For deeper understanding of the framework internals:
-
 | Component | Location |
 |-----------|----------|
-| AzureAIClient source | `/Users/ryanknight/projects/azure/agent-framework/python/packages/azure-ai/agent_framework_azure_ai/_client.py` |
+| Core agents | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/_agents.py` |
+| Tool system | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/_tools.py` |
+| Workflow engine | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/_workflows/` |
+| Azure AI client | `/Users/ryanknight/projects/azure/agent-framework/python/packages/azure-ai/agent_framework_azure_ai/_client.py` |
+| Observability | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/observability.py` |
 | V2 samples | `/Users/ryanknight/projects/azure/agent-framework/python/samples/getting_started/agents/azure_ai/` |
-| Framework documentation | https://learn.microsoft.com/agent-framework/overview/agent-framework-overview |
+| Documentation | https://learn.microsoft.com/agent-framework/overview/agent-framework-overview |
 
 ## Summary
 
-The Microsoft Agent Framework provides a clean abstraction over the Azure AI SDKs:
+The Microsoft Agent Framework is a production-ready framework for building AI agents. It provides:
 
-- **You write**: Simple Python functions and high level configuration
-- **Framework handles**: JSON schemas, API calls, lifecycle management, streaming
-- **Azure AI Foundry**: Hosts and runs your agents
+- **Protocol-based agents**: Flexible agent implementations without inheritance requirements
+- **Automatic tool handling**: Python functions become LLM tools automatically
+- **Multi-agent orchestration**: Graph-based workflows for complex scenarios
+- **Built-in observability**: OpenTelemetry tracing and metrics
+- **Multi-provider support**: Same code works across OpenAI, Azure, Anthropic, and more
 
-This separation allows you to focus on agent behavior rather than API plumbing while still having full access to Azure AI Foundry capabilities.
+When used with Azure AI Foundry, the framework leverages the `azure-ai-projects` SDK for agent registration, lifecycle management, and monitoring. The framework does not require Azure AI Foundry to operate. It can be used standalone with any supported LLM provider.

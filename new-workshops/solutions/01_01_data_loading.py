@@ -108,14 +108,14 @@ def show_graph_structure(driver) -> None:
             MATCH (c:Chunk)
             OPTIONAL MATCH (c)-[:NEXT_CHUNK]->(next:Chunk)
             RETURN c.index as idx,
-                   substring(c.text, 0, 40) as preview,
+                   c.text as text,
                    next.index as next_idx
             ORDER BY c.index
         """)
         print("\n=== Chunk Chain ===")
         for record in result:
             next_str = f" -> Chunk {record['next_idx']}" if record['next_idx'] is not None else " (end)"
-            print(f"Chunk {record['idx']}: \"{record['preview']}...\"{next_str}")
+            print(f"Chunk {record['idx']}: \"{record['text']}\"{next_str}")
 
 
 def main():
