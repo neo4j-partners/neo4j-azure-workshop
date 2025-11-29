@@ -47,12 +47,10 @@ async def run_agent(query: str):
                 instructions="You are a helpful assistant that can answer questions about a graph database schema.",
                 tools=[get_graph_schema],
             ) as agent:
-                thread = agent.get_new_thread()
-
                 print(f"User: {query}\n")
-                print("Assistant: ", end="")
+                print("Assistant: ", end="", flush=True)
 
-                async for update in agent.run_stream(query, thread=thread):
+                async for update in agent.run_stream(query):
                     if update.text:
                         print(update.text, end="", flush=True)
 

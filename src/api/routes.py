@@ -59,7 +59,7 @@ async def chat(request: Request, chat_request: ChatRequest):
             _threads[conversation_id] = thread
             logger.info(f"New thread: conv={conversation_id[:8]}")
 
-        result = await agent.run(chat_request.message, thread=thread)
+        result = await agent.run(chat_request.message, thread=thread, store=False)
         logger.info(f"After run: svc_thread={thread.service_thread_id}")
 
         return {
@@ -91,7 +91,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
             _threads[conversation_id] = thread
 
         response_content = ""
-        async for update in agent.run_stream(chat_request.message, thread=thread):
+        async for update in agent.run_stream(chat_request.message, thread=thread, store=False):
             if update.text:
                 response_content += update.text
 

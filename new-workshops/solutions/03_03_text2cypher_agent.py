@@ -3,7 +3,8 @@ Multi-Tool Agent with Text2Cypher
 
 This workshop demonstrates an agent with three tools: schema retrieval,
 vector search, and natural language to Cypher queries using the Microsoft
-Agent Framework and neo4j-graphrag-python.
+Agent Framework with Azure AI Foundry (V2 SDK - azure-ai-projects) and
+neo4j-graphrag-python.
 
 Run with: uv run python solutions/02_03_text2cypher_agent.py
 """
@@ -16,7 +17,7 @@ from neo4j_graphrag.retrievers import VectorCypherRetriever, Text2CypherRetrieve
 from neo4j_graphrag.schema import get_schema
 from pydantic import Field
 
-from agent_framework.azure import AzureAIAgentClient
+from agent_framework.azure import AzureAIClient
 from azure.identity import DefaultAzureCredential
 from azure.identity.aio import AzureCliCredential
 
@@ -111,7 +112,7 @@ async def run_agent(query: str):
         tools = create_tools(driver)
 
         async with AzureCliCredential() as credential:
-            client = AzureAIAgentClient(
+            client = AzureAIClient(
                 project_endpoint=config.project_endpoint,
                 model_deployment_name=config.model_name,
                 async_credential=credential,
@@ -129,12 +130,10 @@ async def run_agent(query: str):
                 ),
                 tools=tools,
             ) as agent:
-                thread = agent.get_new_thread()
-
                 print(f"User: {query}\n")
-                print("Assistant: ", end="")
+                print("Assistant: ", end="", flush=True)
 
-                async for update in agent.run_stream(query, thread=thread):
+                async for update in agent.run_stream(query):
                     if update.text:
                         print(update.text, end="", flush=True)
 

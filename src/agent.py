@@ -2,12 +2,13 @@
 Agent management module using Microsoft Agent Framework with Azure AI Foundry.
 
 This module provides configuration and agent creation using the Microsoft Agent
-Framework (2025) with Azure AI Foundry integration for persistent, service-managed agents.
+Framework (2025) with Azure AI Foundry (V2 SDK - azure-ai-projects) integration
+for persistent, service-managed agents.
 """
 
 import os
 
-from agent_framework.azure import AzureAIAgentClient
+from agent_framework.azure import AzureAIClient
 from azure.identity.aio import AzureCliCredential
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -50,9 +51,9 @@ class AgentConfig(BaseSettings):
     )
 
 
-def create_agent_client(config: AgentConfig, credential: AzureCliCredential):
+def create_agent_client(config: AgentConfig, credential: AzureCliCredential) -> AzureAIClient:
     """
-    Create an AzureAIAgentClient configured for Foundry.
+    Create an AzureAIClient configured for Foundry.
 
     The returned client should be used as an async context manager to create agents.
 
@@ -61,7 +62,7 @@ def create_agent_client(config: AgentConfig, credential: AzureCliCredential):
         credential: Azure CLI credential for authentication.
 
     Returns:
-        Configured AzureAIAgentClient instance.
+        Configured AzureAIClient instance.
     """
     client_kwargs = {"async_credential": credential}
 
@@ -71,16 +72,16 @@ def create_agent_client(config: AgentConfig, credential: AzureCliCredential):
     if config.model:
         client_kwargs["model_deployment_name"] = config.model
 
-    logger.info(f"Creating AzureAIAgentClient for project: {config.project_endpoint}")
-    return AzureAIAgentClient(**client_kwargs)
+    logger.info(f"Creating AzureAIClient for project: {config.project_endpoint}")
+    return AzureAIClient(**client_kwargs)
 
 
-def create_agent_context(client: AzureAIAgentClient, config: AgentConfig):
+def create_agent_context(client: AzureAIClient, config: AgentConfig):
     """
     Create an agent context manager from the client.
 
     Args:
-        client: Configured AzureAIAgentClient.
+        client: Configured AzureAIClient.
         config: Agent configuration with name and instructions.
 
     Returns:

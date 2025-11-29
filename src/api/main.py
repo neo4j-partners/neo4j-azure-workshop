@@ -177,7 +177,7 @@ async def lifespan(app: fastapi.FastAPI):
     On startup:
     - Loads environment variables
     - Creates Azure CLI credential
-    - Creates AzureAIAgentClient
+    - Creates AzureAIClient (V2)
     - Creates the AI agent (persistent in Foundry)
     - Connects to Neo4j and validates schema (optional)
 

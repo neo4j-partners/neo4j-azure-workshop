@@ -3,7 +3,7 @@ Vector + Graph Retriever Agent
 
 This workshop demonstrates an agent with vector search that retrieves documents
 and traverses the graph to find related context using the Microsoft Agent Framework
-and neo4j-graphrag-python.
+with Azure AI Foundry (V2 SDK - azure-ai-projects) and neo4j-graphrag-python.
 
 Run with: uv run python solutions/02_02_vector_graph_agent.py
 """
@@ -15,7 +15,7 @@ from neo4j_graphrag.retrievers import VectorCypherRetriever
 from neo4j_graphrag.schema import get_schema
 from pydantic import Field
 
-from agent_framework.azure import AzureAIAgentClient
+from agent_framework.azure import AzureAIClient
 from azure.identity.aio import AzureCliCredential
 
 from config import get_neo4j_driver, get_agent_config, get_embedder
@@ -67,7 +67,7 @@ async def run_agent(query: str):
         tools = create_tools(driver)
 
         async with AzureCliCredential() as credential:
-            client = AzureAIAgentClient(
+            client = AzureAIClient(
                 project_endpoint=config.project_endpoint,
                 model_deployment_name=config.model_name,
                 async_credential=credential,
@@ -82,12 +82,10 @@ async def run_agent(query: str):
                 ),
                 tools=tools,
             ) as agent:
-                thread = agent.get_new_thread()
-
                 print(f"User: {query}\n")
-                print("Assistant: ", end="")
+                print("Assistant: ", end="", flush=True)
 
-                async for update in agent.run_stream(query, thread=thread):
+                async for update in agent.run_stream(query):
                     if update.text:
                         print(update.text, end="", flush=True)
 

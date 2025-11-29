@@ -267,7 +267,7 @@ Both clients register agents in Azure AI Foundry portal. The difference is which
 **Verification:**
 - Syntax check: PASSED
 - Import check: PASSED
-- Runtime test: Code executed correctly up to Azure API call (DNS failure is infrastructure issue, not code issue - Azure endpoint not accessible in test environment)
+- Runtime test: PASSED - Agent runs successfully with Azure AI Foundry
 
 **File:** `solutions/02_01_simple_agent.py`
 
@@ -276,13 +276,53 @@ Both clients register agents in Azure AI Foundry portal. The difference is which
 Line 5-6: Added "(V2 SDK - azure-ai-projects)" to docstring
 Line 15:  Changed import from AzureAIAgentClient to AzureAIClient
 Line 39:  Changed client instantiation from AzureAIAgentClient to AzureAIClient
+Line 53:  Removed thread parameter from run_stream() - V2 manages threads internally
 ```
+
+**Important V1 vs V2 Thread Management Differences:**
+
+Both V1 and V2 support explicit thread management, but with different patterns:
+
+| Pattern | V2 (AzureAIClient) | V1 (AzureAIAgentClient) |
+|---------|-------------------|------------------------|
+| Basic (no thread) | `await agent.run(query)` | `await agent.run(query)` |
+| Create thread | `thread = agent.get_new_thread()` | `thread = agent.get_new_thread()` |
+| Use thread | `await agent.run(query, thread=thread, store=False)` | `await agent.run(query, thread=thread)` |
+| Server persistence | `store=True` (default) or `store=False` | Always persisted |
+
+**For our simple single-turn agent:** No explicit thread needed - both V1 and V2 auto-create threads for stateless requests. The original V1 code used explicit thread but it wasn't required.
+
+**Key V2 feature:** The `store` parameter controls in-memory vs server persistence.
+
+### Phase 4: Update All Files - COMPLETED
+
+**Status:** Done
+
+**Files Updated:**
+
+| File | Changes |
+|------|---------|
+| `solutions/02_01_simple_agent.py` | Import, client, removed thread |
+| `solutions/02_02_vector_graph_agent.py` | Import, client, removed thread |
+| `solutions/02_03_text2cypher_agent.py` | Import, client, removed thread |
+| `notebooks/03_01_simple_agent.ipynb` | Import, client, markdown, removed thread |
+| `notebooks/03_02_vector_graph_agent.ipynb` | Import, client, markdown, removed thread |
+| `notebooks/03_03_text2cypher_agent.ipynb` | Import, client, markdown, removed thread |
+
+**Changes Applied to All Files:**
+1. `AzureAIAgentClient` → `AzureAIClient`
+2. Removed explicit `thread = agent.get_new_thread()`
+3. Changed `agent.run_stream(query, thread=thread)` → `agent.run_stream(query)`
+4. Updated docstrings/markdown to reference V2 SDK
+
+**Verification:**
+- All solution files pass syntax check
+- `solutions/02_01_simple_agent.py` tested successfully with Azure AI Foundry
 
 ---
 
-## Next Steps (Phase 4-6)
+## Next Steps (Phase 5-6)
 
-Phase 4, 5, and 6 remain to be implemented:
-- Phase 4: Update Notebook
-- Phase 5: Testing (requires Azure infrastructure)
+Phase 5 and 6 remain:
+- Phase 5: Full end-to-end testing of all solutions and notebooks
 - Phase 6: Code Review and Final Verification
