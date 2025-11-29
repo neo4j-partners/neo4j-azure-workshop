@@ -2,7 +2,8 @@
 Simple Agent with Schema Retrieval Tool
 
 This workshop demonstrates a basic agent using the Microsoft Agent Framework
-with Azure AI Foundry and neo4j-graphrag-python for schema retrieval.
+with Azure AI Foundry (V2 SDK - azure-ai-projects) and neo4j-graphrag-python
+for schema retrieval.
 
 Run with: uv run python solutions/02_01_simple_agent.py
 """
@@ -11,7 +12,7 @@ import asyncio
 
 from neo4j_graphrag.schema import get_schema
 
-from agent_framework.azure import AzureAIAgentClient
+from agent_framework.azure import AzureAIClient
 from azure.identity.aio import AzureCliCredential
 
 from config import get_neo4j_driver, get_agent_config
@@ -35,7 +36,7 @@ async def run_agent(query: str):
         get_graph_schema = create_schema_tool(driver)
 
         async with AzureCliCredential() as credential:
-            client = AzureAIAgentClient(
+            client = AzureAIClient(
                 project_endpoint=config.project_endpoint,
                 model_deployment_name=config.model_name,
                 async_credential=credential,
