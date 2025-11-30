@@ -1,28 +1,17 @@
-# Search Capabilities
+# Fulltext Search Guide
 
-This document describes the search indexes and query patterns available in the Neo4j knowledge graph.
+This guide covers fulltext search capabilities in Neo4j and the indexes created by the restore script.
 
-## Available Indexes
+## Indexes Created by restore_neo4j.py
 
-### Vector Index
+The `scripts/restore_neo4j.py` script creates the following fulltext indexes:
 
-| Index Name | Label | Property | Dimensions | Similarity |
-|------------|-------|----------|------------|------------|
-| `chunkEmbeddings` | `Chunk` | `embedding` | 1536 | COSINE |
+| Index Name | Labels | Property | Purpose |
+|------------|--------|----------|---------|
+| `search_entities` | `Company`, `Product`, `RiskFactor` | `name` | Keyword search for entities |
+| `search_chunks` | `Chunk` | `text` | Fulltext search over document content |
 
-Used for semantic similarity search over document chunks.
-
-### Fulltext Index
-
-| Index Name | Labels | Property |
-|------------|--------|----------|
-| `search_entities` | `Company`, `Product`, `RiskFactor` | `name` |
-
-Used for keyword-based entity search. Created with `--full-text` flag:
-
-```bash
-uv run python scripts/restore_neo4j.py --full-text
-```
+These indexes are always created during restore, regardless of whether the backup includes them.
 
 ## Fulltext Search Syntax
 
@@ -88,7 +77,7 @@ CALL db.index.fulltext.queryNodes('search_entities', 'supply -shortage')
 CALL db.index.fulltext.queryNodes('search_entities', '"supply chain"')
 ```
 
-### Search Options
+### Pagination
 
 ```cypher
 -- Pagination with skip and limit
@@ -125,7 +114,18 @@ MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
 RETURN company.name, COLLECT(DISTINCT risk.name) AS risk_factors
 ```
 
-### Hybrid Search: Keyword + Graph Context
+### Search Document Chunks
+
+```cypher
+CALL db.index.fulltext.queryNodes('search_chunks', 'revenue growth')
+YIELD node AS chunk, score
+MATCH (chunk)-[:FROM_DOCUMENT]->(doc:Document)
+RETURN chunk.text, doc.path, score
+ORDER BY score DESC
+LIMIT 10
+```
+
+### Hybrid: Keyword + Graph Context
 
 ```cypher
 -- Find chunks where a company was extracted
@@ -140,36 +140,29 @@ RETURN entity.name AS company, score, chunk.text
 LIMIT 10
 ```
 
-## Vector vs Fulltext Search
+## When to Use Fulltext vs Vector Search
 
-| Feature | Vector Search | Fulltext Search |
-|---------|--------------|-----------------|
-| **Use Case** | Semantic similarity | Keyword matching |
-| **Query Type** | Natural language questions | Known entity names |
-| **Matching** | Conceptual | Lexical |
-| **Example** | "What risks does the company face?" | "Apple" |
-| **Scoring** | Cosine similarity | Lucene relevance |
-
-### When to Use Each
-
-**Use Vector Search when:**
-- Asking natural language questions
-- Finding conceptually similar content
-- The exact wording is unknown
+| Feature | Fulltext Search | Vector Search |
+|---------|----------------|---------------|
+| **Use Case** | Keyword matching | Semantic similarity |
+| **Query Type** | Known entity names | Natural language questions |
+| **Matching** | Lexical | Conceptual |
+| **Example** | "Apple" | "What risks does the company face?" |
+| **Scoring** | Lucene relevance | Cosine similarity |
 
 **Use Fulltext Search when:**
 - Searching for known entity names
 - Filtering by specific keywords
 - Building autocomplete/typeahead features
 
-**Use Hybrid (both) when:**
-- Maximum recall is needed
-- Combining keyword precision with semantic understanding
+**Use Vector Search when:**
+- Asking natural language questions
+- Finding conceptually similar content
+- The exact wording is unknown
 
-## Performance Considerations
+## Performance Tips
 
-1. **Fulltext indexes are fast** for keyword lookups but don't understand semantics
-2. **Vector indexes excel** at finding similar content but require embedding computation
-3. **Combine both** by using fulltext to filter entities, then vector for semantic ranking
-4. **Use LIMIT** early in queries to avoid processing unnecessary results
-5. **Graph traversal** after search leverages Neo4j's strength in relationship queries
+1. **Use LIMIT early** to avoid processing unnecessary results
+2. **Filter by label** after the fulltext query to narrow results
+3. **Combine with graph traversal** to enrich results with related data
+4. **Use phrase search** for multi-word entity names

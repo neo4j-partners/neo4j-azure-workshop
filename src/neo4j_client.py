@@ -13,24 +13,12 @@ from typing import Any
 
 from neo4j import AsyncGraphDatabase, AsyncDriver
 from neo4j.exceptions import ServiceUnavailable, AuthError
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from logging_config import configure_logging
 
 logger = configure_logging(os.getenv("APP_LOG_FILE", ""))
-
-# Allowed entity labels for Cypher query safety (from data-pipeline schema)
-ALLOWED_ENTITY_LABELS = frozenset({
-    "Company",
-    "Executive",
-    "Product",
-    "FinancialMetric",
-    "RiskFactor",
-    "StockType",
-    "Transaction",
-    "TimePeriod",
-})
 
 
 class Neo4jConfig(BaseSettings):
@@ -56,9 +44,9 @@ class Neo4jConfig(BaseSettings):
         default=None,
         validation_alias="NEO4J_USERNAME",
     )
-    password: str | None = Field(
+    password: SecretStr | None = Field(
         default=None,
-        validation_alias="NEO4J_PASSWORD",
+        description="Neo4j password",
     )
 
     @property
@@ -240,14 +228,6 @@ class Neo4jClient:
             result = await session.run(query, parameters or {})
             return await result.data()
 
-    def get_allowed_entity_types(self) -> list[str]:
-        """Get the list of allowed entity types.
-
-        Returns:
-            Sorted list of allowed entity labels.
-        """
-        return sorted(ALLOWED_ENTITY_LABELS)
-
     async def list_entities_by_type(
         self,
         entity_type: str,
@@ -256,22 +236,12 @@ class Neo4jClient:
         """List entities of a specific type.
 
         Args:
-            entity_type: The entity label (Company, Executive, Product, etc.).
+            entity_type: The entity label (must be validated by caller).
             limit: Maximum number of entities to return.
 
         Returns:
             List of entities with id and name.
-
-        Raises:
-            ValueError: If entity_type is not in ALLOWED_ENTITY_LABELS.
         """
-        if entity_type not in ALLOWED_ENTITY_LABELS:
-            raise ValueError(
-                f"Invalid entity type: {entity_type}. "
-                f"Allowed: {sorted(ALLOWED_ENTITY_LABELS)}"
-            )
-
-        # Label is validated above, safe to use in f-string
         # Use coalesce to fallback to elementId if e.id is not set
         query = f"""
         MATCH (e:{entity_type})

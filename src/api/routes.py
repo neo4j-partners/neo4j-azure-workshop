@@ -15,6 +15,18 @@ from vector_search import SemanticSearchRequest, SemanticSearchResponse
 router = APIRouter()
 logger = logging.getLogger("azureaiapp")
 
+# Allowed entity labels for Cypher query safety (matches data-pipeline schema)
+ALLOWED_ENTITY_LABELS = frozenset({
+    "Company",
+    "Executive",
+    "Product",
+    "FinancialMetric",
+    "RiskFactor",
+    "StockType",
+    "Transaction",
+    "TimePeriod",
+})
+
 # In-memory thread storage for conversation tracking (simple demo)
 # In production, use Redis or a database
 _threads: dict = {}
@@ -212,16 +224,7 @@ async def get_entity_types(request: Request):
 
     Returns the entity types that can be queried (Company, Executive, Product, etc.).
     """
-    if not hasattr(request.app.state, "neo4j_client") or request.app.state.neo4j_client is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Neo4j not configured. Entity search unavailable."
-        )
-
-    neo4j_client = request.app.state.neo4j_client
-    entity_types = neo4j_client.get_allowed_entity_types()
-
-    return EntityTypesResponse(entity_types=entity_types)
+    return EntityTypesResponse(entity_types=sorted(ALLOWED_ENTITY_LABELS))
 
 
 @router.get("/search/entities/{entity_type}", response_model=EntityListResponse)
@@ -235,6 +238,13 @@ async def list_entities(
 
     Available types: Company, Executive, Product, FinancialMetric, RiskFactor, StockType, Transaction, TimePeriod.
     """
+    # Validate entity type before querying
+    if entity_type not in ALLOWED_ENTITY_LABELS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid entity type: {entity_type}. Allowed: {sorted(ALLOWED_ENTITY_LABELS)}"
+        )
+
     if not hasattr(request.app.state, "neo4j_client") or request.app.state.neo4j_client is None:
         raise HTTPException(
             status_code=503,
@@ -252,8 +262,6 @@ async def list_entities(
             entity_type=entity_type,
             count=len(entities),
         )
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Entity list error: {e}")
         raise HTTPException(status_code=500, detail=f"Entity search failed: {str(e)}")
