@@ -70,3 +70,57 @@ This file consolidates all external documentation references from the project's 
 ## Development Tools
 
 - [uv - Python Package Installer](https://github.com/astral-sh/uv)
+
+---
+
+## Neo4j GraphRAG Python Package
+
+### Official Documentation
+- [Neo4j GraphRAG Python - User Guide RAG](https://neo4j.com/docs/neo4j-graphrag-python/current/user_guide_rag.html) - Comprehensive guide for RAG with retrievers
+- [Neo4j GraphRAG API Documentation](https://neo4j.com/docs/neo4j-graphrag-python/current/api.html) - Full API reference
+- [GitHub Repository](https://github.com/neo4j/neo4j-graphrag-python) - Source code and examples
+
+### Hybrid Search
+- [Hybrid Retrieval for GraphRAG Applications](https://neo4j.com/blog/developer/hybrid-retrieval-graphrag-python-package/) - Blog post explaining hybrid search concepts
+- [HybridCypherRetriever Example](https://github.com/neo4j/neo4j-graphrag-python/blob/main/examples/retrieve/hybrid_cypher_retriever.py) - Official code example
+- [Hybrid Retrieval with Graph Traversal (GraphAcademy)](https://graphacademy.neo4j.com/courses/genai-workshop-graphrag/2-neo4j-graphrag/5-hybrid-cypher-retriever/) - Interactive course
+
+### How Hybrid Search Works
+1. Query executes against both vector and fulltext indexes simultaneously
+2. Each index returns results with relevance scores
+3. Scores undergo normalization to ensure comparability
+4. Normalized scores are combined into a unified result set
+5. Merged results are ranked by consolidated score
+6. Top-ranked items are returned
+
+### Key Parameters
+| Parameter | Description |
+|-----------|-------------|
+| `vector_index_name` | Name of the vector index for semantic search |
+| `fulltext_index_name` | Name of the fulltext index for keyword search |
+| `alpha` | Weight for vector score (0-1). Fulltext gets `1-alpha` |
+| `top_k` | Number of results to return |
+| `retrieval_query` | Cypher query for graph traversal (HybridCypherRetriever only) |
+
+### Reranking
+- [Cohere Reranker with Neo4j Full-Text Index](https://medium.com/@m.maguga-darbinian/exploring-the-combination-of-full-text-index-with-coheres-reranker-for-rag-over-a-knowledge-graph-e0a54e89a177) - Using Cohere reranker as post-processing step
+- [Cohere Rerank Product Page](https://cohere.com/rerank) - About Cohere's reranking service
+
+---
+
+## Neo4j Indexes
+
+### Fulltext Indexes
+- [Fulltext Search in Neo4j - Knowledge Base](https://neo4j.com/developer/kb/fulltext-search-in-neo4j/)
+- [Full-text indexes - Cypher Manual](https://neo4j.com/docs/cypher-manual/current/indexes-for-full-text-search/)
+
+### Vector Indexes
+- [Neo4j Vector Index and Search](https://neo4j.com/labs/genai-ecosystem/vector-search/)
+- [Vector indexes - Cypher Manual](https://neo4j.com/docs/cypher-manual/current/indexes/semantic-indexes/vector-indexes/)
+
+---
+
+## Framework Integrations
+
+- [LangChain Neo4j Integration](https://neo4j.com/labs/genai-ecosystem/langchain/)
+- [LlamaIndex Neo4j Integration](https://neo4j.com/labs/genai-ecosystem/llamaindex/)

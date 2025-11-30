@@ -9,6 +9,7 @@ Usage:
     uv run python scripts/restore_neo4j.py --force  # Skip confirmation
     uv run python scripts/restore_neo4j.py --file /path/to/backup.json  # Use local file
     uv run python scripts/restore_neo4j.py --file /path/to/backup.json --sample  # Quick test with 100 nodes/rels
+    uv run python scripts/restore_neo4j.py --full-text  # Add fulltext indexes for entity search
 """
 
 from __future__ import annotations
@@ -166,6 +167,49 @@ async def restore_schema(session: AsyncSession, schema: dict) -> dict:
             print(f"  Warning: Could not create index {index.get('name')}: {e}")
 
     return results
+
+
+async def create_fulltext_indexes(session: AsyncSession) -> int:
+    """Create fulltext indexes for entity search on Company, Product, and RiskFactor names."""
+    indexes_created = 0
+
+    # Define fulltext indexes to create
+    fulltext_indexes = [
+        {
+            "name": "search_entities",
+            "labels": ["Company", "Product", "RiskFactor"],
+            "properties": ["name"],
+        },
+    ]
+
+    for index in fulltext_indexes:
+        try:
+            name = index["name"]
+            labels = index["labels"]
+            properties = index["properties"]
+
+            # Build label string: (n:Label1|Label2|Label3)
+            label_str = "|".join(f"`{label}`" for label in labels)
+            # Build property string: n.prop1, n.prop2
+            prop_str = ", ".join(f"n.`{prop}`" for prop in properties)
+
+            cypher = (
+                f"CREATE FULLTEXT INDEX `{name}` IF NOT EXISTS "
+                f"FOR (n:{label_str}) ON EACH [{prop_str}]"
+            )
+
+            await session.run(cypher)
+            indexes_created += 1
+            print(f"  Created fulltext index: {name}")
+        except Exception as e:
+            print(f"  Warning: Could not create fulltext index {index.get('name')}: {e}")
+
+    # Wait for indexes to come online
+    if indexes_created > 0:
+        print("  Waiting for indexes to come online...")
+        await session.run("CALL db.awaitIndexes(300)")
+
+    return indexes_created
 
 
 async def clear_database(session: AsyncSession) -> None:
@@ -460,7 +504,10 @@ async def parse_backup_data_streaming(
 
 
 async def stream_and_restore(
-    config: RestoreConfig, file_path: Path | None = None, sample: bool = False
+    config: RestoreConfig,
+    file_path: Path | None = None,
+    sample: bool = False,
+    full_text: bool = False,
 ) -> dict:
     """Stream backup from GitHub or local file and restore to Neo4j."""
     # Load schema
@@ -527,11 +574,18 @@ async def stream_and_restore(
             await cleanup_restore_artifacts(session)
             await drop_temp_index(session)
 
+            # Create fulltext indexes if requested
+            fulltext_count = 0
+            if full_text:
+                print("Creating fulltext indexes...")
+                fulltext_count = await create_fulltext_indexes(session)
+
         return {
             "nodes": len(nodes),
             "relationships": len(relationships),
             "constraints": schema_results["constraints"],
             "indexes": schema_results["indexes"],
+            "fulltext_indexes": fulltext_count,
         }
     finally:
         await driver.close()
@@ -550,6 +604,11 @@ async def main() -> int:
         "--sample", "-s",
         action="store_true",
         help="Sample mode: restore only 100 nodes and 100 relationships (all indexes/constraints still restored)",
+    )
+    parser.add_argument(
+        "--full-text",
+        action="store_true",
+        help="Create fulltext indexes on Company, Product, and RiskFactor names for keyword search",
     )
     args = parser.parse_args()
 
@@ -575,6 +634,8 @@ async def main() -> int:
         print(f"Source: GitHub ({GITHUB_URL})")
     if args.sample:
         print("Mode: SAMPLE (100 nodes, 100 relationships, all schema)")
+    if args.full_text:
+        print("Fulltext: Will create fulltext indexes for entity search")
     print()
     print("WARNING: This will DELETE ALL EXISTING DATA AND SCHEMA!")
     print(f"Database: {config.uri}")
@@ -589,13 +650,20 @@ async def main() -> int:
     print()
 
     try:
-        result = await stream_and_restore(config, file_path=args.file, sample=args.sample)
+        result = await stream_and_restore(
+            config,
+            file_path=args.file,
+            sample=args.sample,
+            full_text=args.full_text,
+        )
         print()
         print("=== Restore Complete ===")
         print(f"Nodes: {result['nodes']}")
         print(f"Relationships: {result['relationships']}")
         print(f"Constraints: {result['constraints']}")
         print(f"Indexes: {result['indexes']}")
+        if result["fulltext_indexes"] > 0:
+            print(f"Fulltext Indexes: {result['fulltext_indexes']}")
         return 0
     except Exception as e:
         print(f"Error: {e}")
