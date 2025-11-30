@@ -35,7 +35,7 @@ class AgentConfig(BaseSettings):
     )
 
     name: str = Field(
-        default="arches-agent",
+        default="api-arches-agent",
         validation_alias="AZURE_AI_AGENT_NAME",
     )
     model: str = Field(

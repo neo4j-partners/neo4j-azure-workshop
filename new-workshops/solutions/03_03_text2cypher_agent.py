@@ -92,6 +92,8 @@ def create_tools(driver):
     ) -> str:
         """Find details about companies in their financial documents using semantic search."""
         results = vector_retriever.search(query_text=query, top_k=3)
+        if not results.items:
+            return "No documents found matching the query."
         return "\n\n".join(item.content for item in results.items)
 
     def query_database(
@@ -99,6 +101,8 @@ def create_tools(driver):
     ) -> str:
         """Get answers to specific questions about companies, risks, and financial metrics by querying the database directly."""
         results = text2cypher_retriever.search(query_text=query)
+        if not results.items:
+            return "No results found for the query."
         return "\n\n".join(item.content for item in results.items)
 
     return [get_graph_schema, retrieve_financial_documents, query_database]
@@ -119,7 +123,7 @@ async def run_agent(query: str):
             )
 
             async with client.create_agent(
-                name="multi-tool-agent",
+                name="workshop-multi-tool-agent",
                 instructions=(
                     "You are a helpful assistant that can answer questions about "
                     "a graph database containing financial documents. You have three tools:\n"

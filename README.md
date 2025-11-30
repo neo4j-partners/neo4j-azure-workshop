@@ -44,6 +44,8 @@ Deploy the Azure AI resources:
 azd up
 ```
 
+> **Note:** This creates an Azure AI Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project. See [docs/FOUNDRY_GUIDE.md](docs/FOUNDRY_GUIDE.md) for setup details.
+
 > **Note:** For full deployment options (including Container App), see [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md).
 
 ### 3. Install Dependencies
@@ -76,7 +78,7 @@ This streams and restores the backup from GitHub, creating:
 
 The script reads Neo4j credentials (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`) from `.env` automatically.
 
-### 6. Choose Your Path
+### 6. Build and Deploy Agents to Azure AI Foundry
 
 **Path A: Workshop (Guided Notebooks)**
 Follow the step-by-step workshop guide in [`new-workshops/`](new-workshops/README.md)
@@ -89,6 +91,10 @@ uv run uvicorn api.main:create_app --factory --reload
 ```
 
 The API will be available at `http://localhost:8000`.
+
+> **Note:** After running either path, your agents will be deployed to Azure AI Foundry. You can view them by clicking **Agents** in the left sidebar at [ai.azure.com](https://ai.azure.com/):
+>
+> ![Agents Deployed](images/agents_deployed.png)
 
 ## Testing the AI Agent API
 

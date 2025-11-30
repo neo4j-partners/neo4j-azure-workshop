@@ -16,3 +16,8 @@ dependencies = [
     "openai>=1.0.0",
     "ipykernel>=6.0.0",
 ]
+
+[dependency-groups]
+dev = [
+    "nbstripout>=0.8.2",
+]

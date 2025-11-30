@@ -52,6 +52,15 @@ def print_schema_sections(schema: str) -> None:
     print_section("RELATIONSHIPS", rel_lines)
 
 
+def get_database_counts(driver) -> tuple[int, int]:
+    """Get total count of nodes and relationships in the database."""
+    node_records, _, _ = driver.execute_query("MATCH (n) RETURN count(n) AS cnt")
+    rel_records, _, _ = driver.execute_query("MATCH ()-[r]->() RETURN count(r) AS cnt")
+    node_count = node_records[0]["cnt"] if node_records else 0
+    rel_count = rel_records[0]["cnt"] if rel_records else 0
+    return node_count, rel_count
+
+
 def get_entity_count(driver, entity_type: str, labels: list[str]) -> int | None:
     """Get count of entities matching the index."""
     if not labels:
@@ -154,6 +163,13 @@ def main():
         driver.verify_connectivity()
         print("Connection successful!")
         print()
+
+        # Get database counts
+        node_count, rel_count = get_database_counts(driver)
+        print_section("DATABASE COUNTS", [
+            f"Nodes: {node_count:,}",
+            f"Relationships: {rel_count:,}",
+        ])
 
         # Get schema
         print("GRAPH SCHEMA")

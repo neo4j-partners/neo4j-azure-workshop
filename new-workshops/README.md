@@ -26,24 +26,7 @@ This script will:
 
 ## CRITICAL: Increase Azure AI Token Quota
 
-Before running the workshops, you **must** increase the token rate limits for your Azure AI model deployments, or you will encounter rate limiting errors.
-
-1. Go to [https://ai.azure.com/](https://ai.azure.com/)
-2. Click **Build** in the top navigation bar
-3. Select your project and click **Models** in the left sidebar
-
-![Models Section](../images/models_section.png)
-
-4. Click on **gpt-4o** in the model list
-5. Click the **Details** tab
-6. Click **Edit** to open the deployment settings
-7. Find the **Tokens per Minute Rate Limit** slider and turn the volume up to 11 (set it to the maximum available)
-
-![Token Limits](../images/token_limits.png)
-
-8. Click **Save** to apply the changes
-
-Do the same thing for **text-embedding-ada-002** - click on it, go to Details, click Edit, and max out the token rate limit.
+Before running the workshops, you **must** increase the token rate limits for your Azure AI model deployments. See **[FOUNDRY_GUIDE.md](../docs/FOUNDRY_GUIDE.md)** for detailed instructions.
 
 ## Jupyter Notebooks
 

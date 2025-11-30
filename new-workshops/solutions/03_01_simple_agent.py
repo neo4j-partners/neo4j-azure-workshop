@@ -43,7 +43,7 @@ async def run_agent(query: str):
             )
 
             async with client.create_agent(
-                name="schema-agent",
+                name="workshop-schema-agent",
                 instructions="You are a helpful assistant that can answer questions about a graph database schema.",
                 tools=[get_graph_schema],
             ) as agent:
