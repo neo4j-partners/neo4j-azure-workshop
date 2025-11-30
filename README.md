@@ -92,7 +92,22 @@ uv run uvicorn api.main:create_app --factory --reload
 
 The API will be available at `http://localhost:8000`.
 
-> **Note:** After running either path, your agents will be deployed to Azure AI Foundry. You can view them by clicking **Agents** in the left sidebar at [ai.azure.com](https://ai.azure.com/):
+**Path C: Interactive Console Agent**
+Run a simple interactive chat session with the agent directly in your terminal:
+
+```bash
+uv run start-agent
+```
+
+Type your messages and see streaming responses. Use `quit` or `exit` to stop.
+
+Example:
+```
+You: Why is using Neo4j with Azure AI Foundry like PB & Jelly?
+Agent: Neo4j and Azure AI Foundry complement each other perfectly...
+```
+
+> **Note:** After running any path, your agents will be deployed to Azure AI Foundry. You can view them by clicking **Agents** in the left sidebar at [ai.azure.com](https://ai.azure.com/):
 >
 > ![Agents Deployed](images/agents_deployed.png)
 
