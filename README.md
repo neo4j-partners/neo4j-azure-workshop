@@ -44,7 +44,7 @@ Deploy the Azure AI resources:
 azd up
 ```
 
-> **Note:** This creates an Azure AI Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project. See [docs/FOUNDRY_GUIDE.md](docs/FOUNDRY_GUIDE.md) for setup details.
+> **Note:** This creates an Azure AI Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project. See [docs/FOUNDRY_GUIDE.md](docs/FOUNDRY_GUIDE.md) for more details.
 
 > **Note:** For full deployment options (including Container App), see [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md).
 
