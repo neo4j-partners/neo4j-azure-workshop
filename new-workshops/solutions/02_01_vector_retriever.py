@@ -31,7 +31,7 @@ def demo_vector_search(retriever: VectorRetriever, query: str) -> None:
     results = retriever.search(query_text=query, top_k=10)
     for item in results.items:
         score = item.metadata.get("score", 0)
-        content = item.content if item.content else ""
+        content = item.content[:200] + "..." if item.content and len(item.content) > 200 else (item.content or "")
         print(f"Score: {score:.4f}, Content: {content}")
 
 
