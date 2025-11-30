@@ -11,6 +11,7 @@ from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel, Field
 
 from vector_search import SemanticSearchRequest, SemanticSearchResponse
+from api.neo4j_utils import list_entities_by_type, get_entity_relationships
 
 router = APIRouter()
 logger = logging.getLogger("azureaiapp")
@@ -254,7 +255,7 @@ async def list_entities(
     neo4j_client = request.app.state.neo4j_client
 
     try:
-        results = await neo4j_client.list_entities_by_type(entity_type, limit=limit)
+        results = await list_entities_by_type(neo4j_client, entity_type, limit=limit)
 
         entities = [EntityResult(id=r["id"], name=r["name"]) for r in results]
         return EntityListResponse(
@@ -287,7 +288,7 @@ async def get_entity_relationships(
     neo4j_client = request.app.state.neo4j_client
 
     try:
-        results = await neo4j_client.get_entity_relationships(entity_name, limit=limit)
+        results = await get_entity_relationships(neo4j_client, entity_name, limit=limit)
 
         relationships = [
             RelationshipResult(
