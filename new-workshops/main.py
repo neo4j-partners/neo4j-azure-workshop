@@ -4,9 +4,9 @@ Workshop Solution Runner
 
 Interactive menu to run workshop solutions.
 
-Usage:
-    uv run python main.py          # Interactive menu
-    uv run python main.py 4        # Run solution 4 directly
+Usage from root directory:
+    uv run python new-workshop/main.py          # Interactive menu
+    uv run python new-workshop/main.py 4        # Run solution 4 directly
 """
 
 import asyncio

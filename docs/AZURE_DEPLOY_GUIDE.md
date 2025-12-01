@@ -94,9 +94,34 @@ azd up --parameter deployContainerApp=true
 
 The existing AI infrastructure will be preserved and only the Container App resources will be added.
 
+## Using Existing Azure Resources (New Codespace)
+
+If you've already deployed Azure resources and are starting a new Codespace (or deleted your `.azure` folder), you can sync without redeploying:
+
+```bash
+# Create a new environment (use the same name as your original deployment)
+azd env new <your-env-name>
+
+# Pull values from your deployed Azure resources
+azd env refresh
+```
+
+If you don't remember the environment name, find your resource group:
+
+```bash
+az group list --query "[?contains(name, 'neo4j')].name" -o tsv
+```
+
+Then set it manually and refresh:
+
+```bash
+azd env set AZURE_RESOURCE_GROUP <your-resource-group>
+azd env refresh
+```
+
 ## Environment Variables After Deployment
 
-After deployment, run the setup script to create your local `.env` file:
+After deployment (or after refreshing an existing environment), run the setup script to create your local `.env` file:
 
 ```bash
 uv run setup_env.py

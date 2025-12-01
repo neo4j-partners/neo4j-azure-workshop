@@ -1,5 +1,5 @@
 [project]
-name = "simple-ai-agents"
+name = "neo4j-azure-ai-workshop"
 version = "0.1.0"
 description = "A minimal Azure AI Agent API"
 readme = "README.md"
