@@ -3,7 +3,7 @@ Multi-Tool Agent with Text2Cypher
 
 This workshop demonstrates an agent with three tools: schema retrieval,
 vector search, and natural language to Cypher queries using the Microsoft
-Agent Framework with Azure AI Foundry (V2 SDK - azure-ai-projects) and
+Agent Framework with Microsoft Foundry (V2 SDK - azure-ai-projects) and
 neo4j-graphrag-python.
 
 Run with: uv run python solutions/02_03_text2cypher_agent.py
@@ -60,7 +60,7 @@ def create_tools(driver):
     config = get_agent_config()
     embedder = get_embedder()
 
-    # LLM for Cypher generation uses same Azure AI Foundry endpoint
+    # LLM for Cypher generation uses same Microsoft Foundry endpoint
     credential = DefaultAzureCredential()
     token = credential.get_token("https://cognitiveservices.azure.com/.default")
     cypher_llm = OpenAILLM(

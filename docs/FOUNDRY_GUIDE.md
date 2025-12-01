@@ -1,18 +1,18 @@
-# Azure AI Foundry Setup Guide
+# Microsoft Foundry Setup Guide
 
 After provisioning your Azure infrastructure with `azd up` (as described in the main [README.md](../README.md)), open [https://ai.azure.com/](https://ai.azure.com/) to configure your AI Foundry project.
 
 ## Verify Model Deployments
 
-When you open Azure AI Foundry, you will see that it has registered two models:
+When you open Microsoft Foundry, you will see that it has registered two models:
 - **gpt-4o** - The large language model for chat and reasoning
 - **text-embedding-ada-002** - The embedding model for vector search
 
 ![Models Section](../images/models_section.png)
 
-## CRITICAL: Increase Azure AI Token Quota
+## CRITICAL: Increase Microsoft Foundry Token Quota
 
-Before running the workshops, you **must** increase the token rate limits for your Azure AI model deployments, or you will encounter rate limiting errors.
+Before running the workshops, you **must** increase the token rate limits for your Microsoft Foundry model deployments, or you will encounter rate limiting errors.
 
 1. Go to [https://ai.azure.com/](https://ai.azure.com/)
 2. Click **Build** in the top navigation bar

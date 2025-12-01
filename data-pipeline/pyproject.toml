@@ -1,7 +1,7 @@
 [project]
 name = "foundry-data-pipeline"
 version = "0.1.0"
-description = "Document processing pipeline for Azure AI Foundry"
+description = "Document processing pipeline for Microsoft Foundry"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

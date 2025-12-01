@@ -11,8 +11,8 @@ azd up
 ```
 
 **What gets deployed:**
-- Azure AI Foundry Project
-- Azure AI Services (GPT-4o + Embeddings)
+- Microsoft Foundry Project
+- Microsoft Foundry Services (GPT-4o + Embeddings)
 - Storage Account
 - Log Analytics & Application Insights
 - Role assignments for your user

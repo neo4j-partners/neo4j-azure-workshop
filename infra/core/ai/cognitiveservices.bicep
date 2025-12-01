@@ -66,7 +66,7 @@ resource aiServiceConnection 'Microsoft.CognitiveServices/accounts/connections@2
 }
 
 
-// Creates the Azure Foundry connection to your Azure App Insights resource
+// Creates the Microsoft Foundry connection to your Azure App Insights resource
 resource appInsightConnection 'Microsoft.CognitiveServices/accounts/connections@2025-04-01-preview' = if (!empty(appInsightsId)) {
   name: appInsightConnectionName
   parent: account
@@ -85,7 +85,7 @@ resource appInsightConnection 'Microsoft.CognitiveServices/accounts/connections@
   }
 }
 
-// Creates the Azure Foundry connection to your Azure Storage resource
+// Creates the Microsoft Foundry connection to your Azure Storage resource
 resource storageAccountConnection 'Microsoft.CognitiveServices/accounts/connections@2025-04-01-preview' = {
   name: storageAccountConnectionName
   parent: account

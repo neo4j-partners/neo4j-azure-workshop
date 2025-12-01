@@ -89,7 +89,7 @@ az role assignment create \
 
 ## Supported Regions
 
-Azure AI Foundry only works in the following regions:
+Microsoft Foundry only works in the following regions:
 
 1. East US 2 (eastus2) - Recommended
 2. Sweden Central (swedencentral)

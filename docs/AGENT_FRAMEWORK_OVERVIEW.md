@@ -1,12 +1,12 @@
 # Microsoft Agent Framework
 
-This document provides an overview of the Microsoft Agent Framework, its architecture, capabilities, and how it integrates with Azure AI Foundry for agent registration, management, and observability.
+This document provides an overview of the Microsoft Agent Framework, its architecture, capabilities, and how it integrates with Microsoft Foundry for agent registration, management, and observability.
 
 ## What is the Microsoft Agent Framework?
 
 The Microsoft Agent Framework is a comprehensive Python and .NET framework for building, orchestrating, and deploying AI agents and multi-agent systems. It is designed for production use with features for observability, state management, error handling, and distributed agent communication.
 
-The framework is **not** just a wrapper around Azure SDKs. It is a complete agent framework that can operate independently with any supported LLM provider. When used with Azure AI Foundry, it leverages the `azure-ai-projects` SDK to register and manage agents, enabling the monitoring and evaluation features available in the Azure AI Foundry portal.
+The framework is **not** just a wrapper around Azure SDKs. It is a complete agent framework that can operate independently with any supported LLM provider. When used with Microsoft Foundry, it leverages the `azure-ai-projects` SDK to register and manage agents, enabling the monitoring and evaluation features available in the Microsoft Foundry portal.
 
 ## Core Capabilities
 
@@ -82,7 +82,7 @@ The framework has built-in OpenTelemetry integration for distributed tracing, me
 - Chat message logging with timestamps
 - Pluggable exporters (OTLP, Azure Monitor, custom backends)
 
-When using Azure AI Foundry, traces and metrics flow to Application Insights for visualization in the portal.
+When using Microsoft Foundry, traces and metrics flow to Application Insights for visualization in the portal.
 
 ### Human-in-the-Loop
 
@@ -103,22 +103,22 @@ The framework supports multiple LLM providers through a pluggable architecture.
 |----------|---------|-------------|
 | OpenAI | `agent-framework` (core) | GPT models via OpenAI API |
 | Azure OpenAI | `agent-framework` (core) | GPT models via Azure endpoints |
-| Azure AI Foundry | `agent-framework-azure-ai` | Service-managed agents with portal integration |
+| Microsoft Foundry | `agent-framework-azure-ai` | Service-managed agents with portal integration |
 | Anthropic | `agent-framework-anthropic` | Claude models |
 | Copilot Studio | `agent-framework-copilotstudio` | Published copilots from Power Platform |
 | Agent-to-Agent | `agent-framework-a2a` | Microsoft Graph protocol for distributed agents |
 
-The same agent code works across providers with minimal changes. Switching from OpenAI to Azure AI Foundry requires only changing the client class.
+The same agent code works across providers with minimal changes. Switching from OpenAI to Microsoft Foundry requires only changing the client class.
 
-## Azure AI Foundry Integration
+## Microsoft Foundry Integration
 
-When the framework is used with Azure AI Foundry, it leverages the `azure-ai-projects` SDK (V2) to provide additional capabilities:
+When the framework is used with Microsoft Foundry, it leverages the `azure-ai-projects` SDK (V2) to provide additional capabilities:
 
-- **Agent Registration**: Agents appear in the Azure AI Foundry portal under your project
+- **Agent Registration**: Agents appear in the Microsoft Foundry portal under your project
 - **Lifecycle Management**: The framework handles agent creation and cleanup automatically
 - **Server-Side State**: Threads and messages can be persisted to the Azure service
 - **Monitoring**: Traces and metrics flow to Application Insights
-- **Evaluation**: Agent runs can be analyzed using Azure AI evaluation tools
+- **Evaluation**: Agent runs can be analyzed using Microsoft Foundry evaluation tools
 
 The framework provides two client classes for Azure:
 
@@ -131,11 +131,11 @@ This project uses `AzureAIClient` (V2) which aligns with current Microsoft docum
 
 ### How Registration Works
 
-When you create an agent using the framework with Azure AI Foundry:
+When you create an agent using the framework with Microsoft Foundry:
 
 1. You call `client.create_agent()` which returns an async context manager
-2. Entering the context sends a creation request to Azure AI Foundry
-3. Azure AI Foundry creates the agent and returns an agent ID
+2. Entering the context sends a creation request to Microsoft Foundry
+3. Microsoft Foundry creates the agent and returns an agent ID
 4. The agent appears in the portal under your project
 5. Exiting the context automatically deletes the agent (cleanup)
 
@@ -145,7 +145,7 @@ You do not need to manage agent IDs or call delete methods manually.
 
 ### Agent Client Creation
 
-The API creates an `AzureAIClient` connected to Azure AI Foundry.
+The API creates an `AzureAIClient` connected to Microsoft Foundry.
 
 See `src/agent.py:54-76`:
 
@@ -248,7 +248,7 @@ result1 = await agent.run("Hello", thread=thread, store=False)
 result2 = await agent.run("Tell me more", thread=thread, store=False)
 ```
 
-The `store=False` parameter keeps messages in memory only. Use `store=True` (default) to persist messages to Azure AI Foundry.
+The `store=False` parameter keeps messages in memory only. Use `store=True` (default) to persist messages to Microsoft Foundry.
 
 See `src/api/routes.py:51-62` for the API implementation of multi-turn conversations.
 
@@ -259,7 +259,7 @@ See `src/api/routes.py:51-62` for the API implementation of multi-turn conversat
 | Core agents | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/_agents.py` |
 | Tool system | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/_tools.py` |
 | Workflow engine | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/_workflows/` |
-| Azure AI client | `/Users/ryanknight/projects/azure/agent-framework/python/packages/azure-ai/agent_framework_azure_ai/_client.py` |
+| Microsoft Foundry client | `/Users/ryanknight/projects/azure/agent-framework/python/packages/azure-ai/agent_framework_azure_ai/_client.py` |
 | Observability | `/Users/ryanknight/projects/azure/agent-framework/python/packages/core/agent_framework/observability.py` |
 | V2 samples | `/Users/ryanknight/projects/azure/agent-framework/python/samples/getting_started/agents/azure_ai/` |
 | Documentation | https://learn.microsoft.com/agent-framework/overview/agent-framework-overview |
@@ -274,4 +274,4 @@ The Microsoft Agent Framework is a production-ready framework for building AI ag
 - **Built-in observability**: OpenTelemetry tracing and metrics
 - **Multi-provider support**: Same code works across OpenAI, Azure, Anthropic, and more
 
-When used with Azure AI Foundry, the framework leverages the `azure-ai-projects` SDK for agent registration, lifecycle management, and monitoring. The framework does not require Azure AI Foundry to operate. It can be used standalone with any supported LLM provider.
+When used with Microsoft Foundry, the framework leverages the `azure-ai-projects` SDK for agent registration, lifecycle management, and monitoring. The framework does not require Microsoft Foundry to operate. It can be used standalone with any supported LLM provider.

@@ -75,7 +75,7 @@ This runs agent, streaming, memory, semantic search, and entity search tests.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `AZURE_AI_PROJECT_ENDPOINT` | Yes | Azure AI Foundry project endpoint |
+| `AZURE_AI_PROJECT_ENDPOINT` | Yes | Microsoft Foundry project endpoint |
 | `AZURE_AI_MODEL_NAME` | No | Model deployment name |
 | `AZURE_AI_EMBEDDING_NAME` | No | Embedding model deployment (default: text-embedding-ada-002) |
 | `AZURE_AI_AGENT_NAME` | No | Agent name (default: arches-agent) |
@@ -84,4 +84,4 @@ This runs agent, streaming, memory, semantic search, and entity search tests.
 | `NEO4J_PASSWORD` | No | Neo4j password |
 | `NEO4J_VECTOR_INDEX_NAME` | No | Neo4j vector index name (default: chunkEmbeddings) |
 
-**Note:** Semantic search uses Azure AI Foundry embeddings with Azure CLI credentials (`az login`). No API keys required.
+**Note:** Semantic search uses Microsoft Foundry embeddings with Azure CLI credentials (`az login`). No API keys required.

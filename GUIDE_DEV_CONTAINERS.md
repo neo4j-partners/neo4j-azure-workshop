@@ -42,7 +42,7 @@
 
 5. **Update Model Token Limits:**
 
-   This creates an Azure AI Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project.
+   This creates an Microsoft Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project.
 
    Click **Models** in the left sidebar to see your deployments:
 
@@ -107,7 +107,7 @@ This project uses **resource-group-scoped deployment** - all Azure resources dep
 
 ```
 Your Resource Group
-├── Azure AI Foundry Project (AI Hub + Project)
+├── Microsoft Foundry Project (AI Hub + Project)
 ├── Azure OpenAI Service (gpt-4o + text-embedding-ada-002)
 ├── Storage Account
 ├── Container Registry
@@ -140,7 +140,7 @@ azd up
 
 ### Supported Regions
 
-Azure AI Foundry only works in these regions:
+Microsoft Foundry only works in these regions:
 - eastus2 (Recommended)
 - swedencentral
 - westus2

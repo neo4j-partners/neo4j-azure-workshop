@@ -1,12 +1,12 @@
-# Neo4j and Azure Foundry AI Workshop
+# Neo4j and Microsoft Foundry AI Workshop
 
 Build AI agents that can answer complex questions about financial documents using knowledge graphs and natural language. This workshop uses **SEC Form 10-K filings** (annual reports from public companies like Apple) as source data, transforming unstructured PDF documents into a queryable knowledge graph with companies, executives, financial metrics, and risk factors.
 
-This repository provides three ways to learn and build AI agents with Neo4j GraphRAG and the **Microsoft Agent Framework (2025)** with **Azure AI Foundry**:
+This repository provides three ways to learn and build AI agents with Neo4j GraphRAG and the **Microsoft Agent Framework (2025)** with **Microsoft Foundry**:
 
 1. **Interactive Workshops** ([`new-workshops/`](new-workshops/README.md)) - Jupyter notebooks and Python solutions covering retriever patterns (vector search, vector-cypher, text2cypher) and agent development with tools for schema retrieval, graph traversal, and natural language to Cypher.
 
-2. **Complete API Server** ([`src/`](src/)) - A complete example FastAPI application exposing REST endpoints for agent status, chat, and streaming chat, using `AzureAIAgentClient` for persistent agents hosted in Azure AI Foundry.
+2. **Complete API Server** ([`src/`](src/)) - A complete example FastAPI application exposing REST endpoints for agent status, chat, and streaming chat, using `AzureAIAgentClient` for persistent agents hosted in Microsoft Foundry.
 
 3. **Data Pipeline** (optional) ([`data-pipeline/`](data-pipeline/README.md)) - Document processing pipeline using neo4j-graphrag-python's `SimpleKGPipeline` to parse PDFs, chunk text, generate vector embeddings, extract entities and relationships via LLM, and store everything in Neo4j as a queryable knowledge graph.
 
@@ -42,7 +42,7 @@ Run the setup script to select your Azure region and initialize the environment:
 > **Supported Regions:** `eastus2`, `swedencentral`, or `westus2`
 
 ### 2. Provision Infrastructure
-Deploy the Azure AI resources:
+Deploy the Microsoft Foundry resources:
 
 ```bash
 azd up
@@ -54,7 +54,7 @@ azd up
 
 ### 3. Update Model Token Limits
 
-This creates an Azure AI Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project. Click **Build** in the top navigation bar, then select your project.
+This creates an Microsoft Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project. Click **Build** in the top navigation bar, then select your project.
 
 Click **Models** in the left sidebar to see your deployments:
 
@@ -96,7 +96,7 @@ This streams and restores the backup from GitHub, creating:
 
 The script reads Neo4j credentials (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`) from `.env` automatically.
 
-### 7. Build and Deploy Agents to Azure AI Foundry
+### 7. Build and Deploy Agents to Microsoft Foundry
 
 **Path A: Workshop (Guided Notebooks)**
 Follow the step-by-step workshop guide in [`new-workshops/`](new-workshops/README.md)
@@ -121,11 +121,11 @@ Type your messages and see streaming responses. Use `quit` or `exit` to stop.
 
 Example:
 ```
-You: Why is using Neo4j with Azure AI Foundry like PB & Jelly?
-Agent: Neo4j and Azure AI Foundry complement each other perfectly...
+You: Why is using Neo4j with Microsoft Foundry like PB & Jelly?
+Agent: Neo4j and Microsoft Foundry complement each other perfectly...
 ```
 
-> **Note:** After running any path, your agents will be deployed to Azure AI Foundry. You can view them by clicking **Agents** in the left sidebar at [ai.azure.com](https://ai.azure.com/):
+> **Note:** After running any path, your agents will be deployed to Microsoft Foundry. You can view them by clicking **Agents** in the left sidebar at [ai.azure.com](https://ai.azure.com/):
 >
 > ![Agents Deployed](images/agents_deployed.png)
 

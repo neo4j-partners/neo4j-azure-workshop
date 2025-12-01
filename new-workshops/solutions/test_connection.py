@@ -121,7 +121,7 @@ def get_constraints(driver) -> list[str]:
 
 
 def test_azure_model_connection() -> bool:
-    """Test Azure AI model connection via OpenAI-compatible endpoint."""
+    """Test Microsoft Foundry model connection via OpenAI-compatible endpoint."""
     config = get_agent_config()
     credential = DefaultAzureCredential()
     token = credential.get_token("https://cognitiveservices.azure.com/.default")
@@ -185,9 +185,9 @@ def main():
         constraints = get_constraints(driver)
         print_section("CONSTRAINTS", constraints)
 
-    # Test Azure AI model connection
+    # Test Microsoft Foundry model connection
     print("=" * 50)
-    print("AZURE AI MODEL")
+    print("Microsoft Foundry Model")
     print("=" * 50)
     if test_azure_model_connection():
         print("Model connection successful!")

@@ -9,7 +9,7 @@ param environmentName string
 @description('Location for all resources. Defaults to resource group location.')
 param location string = resourceGroup().location
 
-@description('The Azure AI Foundry Hub resource name. If ommited will be generated')
+@description('The Microsoft Foundry Hub resource name. If ommited will be generated')
 param aiProjectName string = ''
 @description('The AI Services resource name. If ommited will be generated')
 param aiServicesName string = ''
@@ -170,7 +170,7 @@ module userRoleAzureAIDeveloper 'core/security/role.bicep' = if (!skipRoleAssign
   params: {
     principalType: runnerPrincipalType
     principalId: principalId
-    roleDefinitionId: '64702f94-c441-49e6-a78b-ef80e0188fee' // Azure AI Developer
+    roleDefinitionId: '64702f94-c441-49e6-a78b-ef80e0188fee' // Microsoft Foundry Developer
   }
 }
 
@@ -188,7 +188,7 @@ module userAzureAIUser 'core/security/role.bicep' = if (!skipRoleAssignments) {
   params: {
     principalType: runnerPrincipalType
     principalId: principalId
-    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Azure AI User
+    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Microsoft Foundry User
   }
 }
 
@@ -198,7 +198,7 @@ module backendAzureAIUser 'core/security/role.bicep' = if (!skipRoleAssignments 
   params: {
     principalType: 'ServicePrincipal'
     principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
-    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Azure AI User
+    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Microsoft Foundry User
   }
 }
 
@@ -216,7 +216,7 @@ module backendRoleAzureAIDeveloper 'core/security/role.bicep' = if (!skipRoleAss
   params: {
     principalType: 'ServicePrincipal'
     principalId: api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
-    roleDefinitionId: '64702f94-c441-49e6-a78b-ef80e0188fee' // Azure AI Developer
+    roleDefinitionId: '64702f94-c441-49e6-a78b-ef80e0188fee' // Microsoft Foundry Developer
   }
 }
 

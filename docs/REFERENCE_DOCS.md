@@ -8,7 +8,7 @@ This file consolidates all external documentation references from the project's 
 
 ### Official Documentation
 - [Agent Framework Overview](https://learn.microsoft.com/en-us/agent-framework/overview/agent-framework-overview)
-- [Azure AI Foundry Agent](https://learn.microsoft.com/en-us/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-agent)
+- [Microsoft Foundry Agent](https://learn.microsoft.com/en-us/agent-framework/user-guide/agents/agent-types/azure-ai-foundry-agent)
 - [Agent Types Reference](https://learn.microsoft.com/en-us/agent-framework/user-guide/agents/agent-types/)
 - [Microsoft Learn Training Path](https://learn.microsoft.com/en-us/training/paths/develop-ai-agents-on-azure/)
 
@@ -22,12 +22,12 @@ This file consolidates all external documentation references from the project's 
 
 ---
 
-## Azure AI Foundry
+## Microsoft Foundry
 
 ### Overview and Getting Started
-- [What is Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-azure-ai-foundry?view=foundry)
+- [What is Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-azure-ai-foundry?view=foundry)
 - [Get Started with Code (Python SDK)](https://learn.microsoft.com/en-us/azure/ai-foundry/quickstarts/get-started-code?view=foundry&tabs=python)
-- [Azure AI Foundry Portal](https://learn.microsoft.com/en-us/azure/ai-foundry/)
+- [Microsoft Foundry Portal](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 
 ### Agents and Hosted Agents
 - [Hosted Agents Concepts](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/hosted-agents?view=foundry)

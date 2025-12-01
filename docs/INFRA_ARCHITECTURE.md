@@ -2,8 +2,8 @@
 
 ## Project Summary
 
-- **Azure AI Agent Service API** built with FastAPI using the Microsoft Agent Framework (2025) with Azure AI Foundry integration
-- Creates **persistent, service-managed AI agents** hosted in Azure AI Foundry with conversation memory via threads
+- **Microsoft Foundry Agent Service API** built with FastAPI using the Microsoft Agent Framework (2025) with Microsoft Foundry integration
+- Creates **persistent, service-managed AI agents** hosted in Microsoft Foundry with conversation memory via threads
 - Exposes REST endpoints for agent chat (sync and streaming), agent metadata, and semantic search
 - Includes optional **Neo4j graph database** integration for knowledge graph schema and **vector semantic search** with graph-aware context enrichment
 - Uses **Azure Developer CLI (azd)** for infrastructure provisioning and deployment to Azure Container Apps
@@ -17,8 +17,8 @@
 
 | Resource | Purpose |
 |----------|---------|
-| **Azure AI Foundry Project** | Hosts the AI agent and model deployments |
-| **Azure AI Services** | Provides GPT-4o chat and text-embedding-ada-002 embedding models |
+| **Microsoft Foundry Project** | Hosts the AI agent and model deployments |
+| **Microsoft Foundry Services** | Provides GPT-4o chat and text-embedding-ada-002 embedding models |
 | **Azure Container Apps** | Hosts the FastAPI application |
 | **Azure Container Registry** | Stores Docker images for deployment |
 | **Azure Storage Account** | Required by AI Foundry for agent state |
@@ -28,7 +28,7 @@
 ### AI Agent
 
 - A persistent agent named `arches-agent` (configurable) using `gpt-4o`
-- Server-managed conversation threads stored in Azure AI Foundry
+- Server-managed conversation threads stored in Microsoft Foundry
 - System instructions defining agent behavior
 
 ---
@@ -38,7 +38,7 @@
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | Cloud Platform | Azure | Hosts all infrastructure |
-| AI Backend | Azure AI Foundry | Manages AI agents and model access |
+| AI Backend | Microsoft Foundry | Manages AI agents and model access |
 | Agent SDK | Microsoft Agent Framework | Provides agent creation and conversation APIs |
 | Web Framework | FastAPI | Handles HTTP requests |
 | Production Server | Gunicorn + Uvicorn | Runs multiple worker processes |
@@ -135,9 +135,9 @@ flowchart LR
 
 The following roles are assigned automatically:
 
-- **Azure AI Developer** - For creating and managing agents
+- **Microsoft Foundry Developer** - For creating and managing agents
 - **Cognitive Services User** - For calling AI models
-- **Azure AI User** - For project access
+- **Microsoft Foundry User** - For project access
 - **Storage Blob Data Contributor** - For AI Foundry state storage
 
 ### Environment Variables Exported
@@ -151,11 +151,11 @@ After provisioning, these variables are available:
 
 ---
 
-## Azure AI Foundry
+## Microsoft Foundry
 
-### What is Azure AI Foundry?
+### What is Microsoft Foundry?
 
-Azure AI Foundry is Microsoft's platform for building and deploying AI applications. It provides:
+Microsoft Foundry is Microsoft's platform for building and deploying AI applications. It provides:
 
 - **Project-based organization** - Group related AI resources together
 - **Model deployments** - Deploy OpenAI and other models
@@ -164,7 +164,7 @@ Azure AI Foundry is Microsoft's platform for building and deploying AI applicati
 
 ### Agent Framework Integration
 
-This project uses the **Microsoft Agent Framework (2025)** with Azure AI Foundry:
+This project uses the **Microsoft Agent Framework (2025)** with Microsoft Foundry:
 
 ```python
 from agent_framework.azure import AzureAIAgentClient
@@ -193,7 +193,7 @@ async with client.create_agent(name="arches-agent", instructions="...") as agent
 
 ### Thread Persistence
 
-- Threads are stored **server-side** in Azure AI Foundry
+- Threads are stored **server-side** in Microsoft Foundry
 - Each thread has a `service_thread_id` for retrieval
 - Conversation history is maintained across requests
 - This app maps `conversation_id` (UUID) to `AgentThread` objects locally
@@ -232,7 +232,7 @@ flowchart TB
     end
 
     subgraph Azure["Azure Services"]
-        AIF[Azure AI Foundry<br/>Agent Service]
+        AIF[Microsoft Foundry<br/>Agent Service]
         AOA[Azure OpenAI<br/>Embeddings]
     end
 
@@ -272,7 +272,7 @@ sequenceDiagram
     participant C as Client
     participant R as routes.py
     participant A as Agent Framework
-    participant F as Azure AI Foundry
+    participant F as Microsoft Foundry
 
     C->>R: POST /chat {message, conversation_id?}
 
@@ -352,7 +352,7 @@ Currently threads are stored in memory (a Python dictionary). This means:
 
 | Variable | Description |
 |----------|-------------|
-| `AZURE_AI_PROJECT_ENDPOINT` | Azure AI Foundry project endpoint URL |
+| `AZURE_AI_PROJECT_ENDPOINT` | Microsoft Foundry project endpoint URL |
 
 ### Optional
 
@@ -400,7 +400,7 @@ Uses managed identity (`AZURE_CLIENT_ID` environment variable). The Container Ap
 
 ## Key Design Principles
 
-1. **Service-Managed Agents** - Agents persist in Azure AI Foundry, not created per request
+1. **Service-Managed Agents** - Agents persist in Microsoft Foundry, not created per request
 2. **Conversation Threading** - Server-side thread storage maintains context across requests
 3. **Graceful Degradation** - App works without Neo4j/vector search if not configured
 4. **Async-First** - All I/O operations are async for scalability
@@ -412,5 +412,5 @@ Uses managed identity (`AZURE_CLIENT_ID` environment variable). The Container Ap
 ## References
 
 - [Microsoft Agent Framework](https://github.com/microsoft/agent-framework)
-- [Azure AI Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
+- [Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/)
 - [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/)

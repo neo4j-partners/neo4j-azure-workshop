@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - When proposing new features, write proposals in plain English only (no code). Keep proposals simple—this is a demo project.
 - Use Python best practices and pydantic type safety where possible.
-- **Always use the latest version of the Microsoft Agent Framework with Azure AI Foundry** for agent-related functionality. Reference the framework source at `/Users/ryanknight/projects/azure/agent-framework` and samples at `/Users/ryanknight/projects/azure/Agent-Framework-Samples`. See `AGENT_FRAMEWORK.md` for details.
+- **Always use the latest version of the Microsoft Agent Framework with Microsoft Foundry** for agent-related functionality. Reference the framework source at `/Users/ryanknight/projects/azure/agent-framework` and samples at `/Users/ryanknight/projects/azure/Agent-Framework-Samples`. See `AGENT_FRAMEWORK.md` for details.
 
 ## Project Overview
 
-This is an Azure AI Agent Service API built with FastAPI using the **Microsoft Agent Framework (2025)** with **Azure AI Foundry** integration. It uses `AzureAIAgentClient` for persistent, service-managed agents hosted in Azure AI Foundry, exposing REST endpoints for agent status and chat.
+This is an Microsoft Foundry Agent Service API built with FastAPI using the **Microsoft Agent Framework (2025)** with **Microsoft Foundry** integration. It uses `AzureAIAgentClient` for persistent, service-managed agents hosted in Microsoft Foundry, exposing REST endpoints for agent status and chat.
 
 ## Commands
 
@@ -37,7 +37,7 @@ docker run -p 8000:50505 --env-file .env simple-ai-agents
 ### Application Flow
 1. `api/main.py` - FastAPI app factory with lifespan manager that:
    - Loads environment from `.env` in project root (via `util.get_env_file_path()`)
-   - Creates an `AzureAIAgentClient` connected to Azure AI Foundry
+   - Creates an `AzureAIAgentClient` connected to Microsoft Foundry
    - Creates a persistent agent via `create_agent()` context manager
 
 2. `agent.py` - Agent management using Agent Framework:
@@ -51,12 +51,12 @@ docker run -p 8000:50505 --env-file .env simple-ai-agents
    - `POST /chat/stream` - Streaming chat using `run_stream()` method
 
 ### Production (Gunicorn)
-`gunicorn.conf.py` validates environment on startup. Each worker creates its own agent instance backed by Azure AI Foundry.
+`gunicorn.conf.py` validates environment on startup. Each worker creates its own agent instance backed by Microsoft Foundry.
 
 ## Environment Variables
 
 Required:
-- `AZURE_AI_PROJECT_ENDPOINT` - Azure AI Foundry project endpoint
+- `AZURE_AI_PROJECT_ENDPOINT` - Microsoft Foundry project endpoint
 
 Optional:
 - `AZURE_AI_AGENT_NAME` - Agent name (default: "arches-agent")

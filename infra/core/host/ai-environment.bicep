@@ -121,7 +121,7 @@ module projectAIUserRoleAssignment '../../core/security/role.bicep' = if (!skipR
   params: {
     principalType: 'ServicePrincipal'
     principalId: cognitiveServices.outputs.projectPrincipalId
-    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Azure AI User
+    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Microsoft Foundry User
   }
 }
 

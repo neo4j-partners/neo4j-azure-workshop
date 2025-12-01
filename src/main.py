@@ -35,7 +35,7 @@ async def main():
             print("Agent ready.\n")
 
             # Run sample query first
-            sample_query = "Why is using Neo4j with Azure AI Foundry like PB & Jelly?"
+            sample_query = "Why is using Neo4j with Microsoft Foundry like PB & Jelly?"
             print(f"You: {sample_query}")
             print("Agent: ", end="", flush=True)
             async for chunk in agent.run_stream(sample_query):

@@ -1,6 +1,6 @@
 # Agent Framework Workshops with Neo4j GraphRAG
 
-These workshops demonstrate how to build AI agents using the Microsoft Agent Framework with Azure AI Foundry, integrated with Neo4j graph database capabilities via the neo4j-graphrag-python library.
+These workshops demonstrate how to build AI agents using the Microsoft Agent Framework with Microsoft Foundry, integrated with Neo4j graph database capabilities via the neo4j-graphrag-python library.
 
 ## Prerequisites
 
@@ -24,9 +24,9 @@ uv run python new-workshops/solutions/test_connection.py
 
 > **Important (Codespaces/Dev Containers):** After registering the kernel, you must **refresh your browser** (or run "Developer: Reload Window" from the command palette) for VS Code to detect the new Jupyter kernel.
 
-## CRITICAL: Increase Azure AI Token Quota
+## CRITICAL: Increase Microsoft Foundry Token Quota
 
-Before running the workshops, you **must** increase the token rate limits for your Azure AI model deployments. See **[FOUNDRY_GUIDE.md](../docs/FOUNDRY_GUIDE.md)** for detailed instructions.
+Before running the workshops, you **must** increase the token rate limits for your Microsoft Foundry model deployments. See **[FOUNDRY_GUIDE.md](../docs/FOUNDRY_GUIDE.md)** for detailed instructions.
 
 ## Jupyter Notebooks
 
@@ -34,7 +34,7 @@ Interactive notebooks are available in the `notebooks/` directory for hands-on l
 
 ### Retriever Workshops (01_xx)
 
-These notebooks demonstrate RAG patterns using neo4j-graphrag with Azure AI Foundry:
+These notebooks demonstrate RAG patterns using neo4j-graphrag with Microsoft Foundry:
 
 - **01_01_vector_retriever.ipynb** - Basic vector search and GraphRAG pipeline
 - **01_02_vector_cypher_retriever.ipynb** - Vector search with custom Cypher for richer context
@@ -42,7 +42,7 @@ These notebooks demonstrate RAG patterns using neo4j-graphrag with Azure AI Foun
 
 ### Agent Workshops (02_xx)
 
-These notebooks demonstrate the Microsoft Agent Framework with Azure AI Foundry:
+These notebooks demonstrate the Microsoft Agent Framework with Microsoft Foundry:
 
 - **02_01_simple_agent.ipynb** - Basic agent with schema retrieval tool
 - **02_02_vector_graph_agent.ipynb** - Agent with vector search and graph traversal
@@ -124,7 +124,7 @@ uv run python solutions/02_03_text2cypher_agent.py
 These workshops use:
 
 - **Microsoft Agent Framework** - For agent creation and tool management
-- **Azure AI Foundry** - For model hosting (via AzureAIAgentClient)
+- **Microsoft Foundry** - For model hosting (via AzureAIAgentClient)
 - **neo4j-graphrag-python** - For graph retrieval capabilities
 - **Neo4j** - For graph database storage and vector search
 

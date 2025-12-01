@@ -2,7 +2,7 @@
 Shared configuration and utilities for workshop solutions.
 
 This module provides common functionality for Neo4j connections,
-Azure AI Foundry integration, and configuration management.
+Microsoft Foundry integration, and configuration management.
 """
 
 from contextlib import contextmanager
@@ -107,7 +107,7 @@ def _get_azure_token() -> str:
 
 def get_embedder() -> OpenAIEmbeddings:
     """
-    Get embedder using Azure AI Foundry's OpenAI-compatible endpoint.
+    Get embedder using Microsoft Foundry's OpenAI-compatible endpoint.
 
     Uses Azure CLI credentials to authenticate with the inference endpoint.
     """
@@ -123,7 +123,7 @@ def get_embedder() -> OpenAIEmbeddings:
 
 def get_llm() -> OpenAILLM:
     """
-    Get LLM using Azure AI Foundry's OpenAI-compatible endpoint.
+    Get LLM using Microsoft Foundry's OpenAI-compatible endpoint.
 
     Uses Azure CLI credentials to authenticate with the inference endpoint.
     """
