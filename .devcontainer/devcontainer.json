@@ -1,6 +1,6 @@
 {
     "name": "neo4j-azure-workshop",
-    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
     "forwardPorts": [8000],
     "features": {
         "ghcr.io/devcontainers/features/azure-cli:1": {

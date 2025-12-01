@@ -9,20 +9,20 @@ If using Azure deployment, you can generate this file with `uv run setup_env.py`
 
 ## Quick Start
 
-Run the setup script to install dependencies, register the Jupyter kernel, and test connections:
+Dependencies are managed by the root `pyproject.toml`. From the **project root**, run:
 
 ```bash
-cd new-workshops
-./setup.sh
+# Install dependencies (if not already done)
+uv sync --prerelease=allow
+
+# Register the Jupyter kernel
+uv run python -m ipykernel install --user --name neo4j-workshop --display-name "Neo4j Workshop"
+
+# Test connections
+uv run python new-workshops/solutions/test_connection.py
 ```
 
-This script will:
-1. Install [uv](https://github.com/astral-sh/uv) if not already installed
-2. Install Python dependencies
-3. Register a Jupyter kernel named "neo4j-jupyter-kernel"
-4. Test Neo4j and Azure AI connections
-
-> **Important (Codespaces/Dev Containers):** After running `setup.sh`, you must **refresh your browser** (or run "Developer: Reload Window" from the command palette) for VS Code to detect the new Jupyter kernel.
+> **Important (Codespaces/Dev Containers):** After registering the kernel, you must **refresh your browser** (or run "Developer: Reload Window" from the command palette) for VS Code to detect the new Jupyter kernel.
 
 ## CRITICAL: Increase Azure AI Token Quota
 
@@ -48,10 +48,9 @@ These notebooks demonstrate the Microsoft Agent Framework with Azure AI Foundry:
 - **02_02_vector_graph_agent.ipynb** - Agent with vector search and graph traversal
 - **02_03_text2cypher_agent.ipynb** - Multi-tool agent with schema, vector, and Text2Cypher tools
 
-To run notebooks:
+To run notebooks from the project root:
 ```bash
-cd new-workshops
-uv run jupyter notebook notebooks/
+uv run jupyter notebook new-workshops/notebooks/
 ```
 
 ### Selecting the Jupyter Kernel (VS Code)
@@ -64,7 +63,7 @@ When opening a notebook in VS Code, you need to select the correct Jupyter kerne
 
 2. Choose **Jupyter Kernel...** from the dropdown
 
-3. Select **neo4j-jupyter-kernel** from the list
+3. Select **Neo4j Workshop** from the list
 
 ![Jupyter Kernel](../images/jupyter_kernel.png)
 
@@ -133,7 +132,6 @@ These workshops use:
 
 ```
 new-workshops/
-├── pyproject.toml          # Dependencies using uv
 ├── README.md               # This file
 ├── notebooks/              # Jupyter notebooks for interactive learning
 │   ├── 01_01_vector_retriever.ipynb

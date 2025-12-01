@@ -69,10 +69,12 @@
 
    **Path A: Workshop (Guided Notebooks)**
    ```bash
-   cd new-workshops
-   ./setup.sh
+   # Register the Jupyter kernel
+   uv run python -m ipykernel install --user --name neo4j-workshop --display-name "Neo4j Workshop"
    ```
-   After setup completes, **refresh your browser** to detect the new Jupyter kernel, then follow the workshop guide in [`new-workshops/`](new-workshops/README.md)
+   After registering the kernel, **refresh your browser** to detect the new Jupyter kernel, then follow the workshop guide in [`new-workshops/`](new-workshops/README.md)
+
+   > **Important:** If you get an Azure authentication error in a notebook, restart your Jupyter kernel (Kernel → Restart) after running `az login`. The kernel needs to be restarted to pick up the new credentials.
 
    **Path B: Full Server (API Development)**
    Continue with steps 9-10 below to run the complete API server.

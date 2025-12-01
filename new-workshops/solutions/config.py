@@ -8,7 +8,7 @@ Azure AI Foundry integration, and configuration management.
 from contextlib import contextmanager
 from pathlib import Path
 
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential, DefaultAzureCredential
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from neo4j_graphrag.embeddings import OpenAIEmbeddings
@@ -72,6 +72,39 @@ def get_agent_config() -> AgentConfig:
     return AgentConfig()
 
 
+def _get_azure_token() -> str:
+    """
+    Get Azure token for cognitive services.
+
+    Tries AzureCliCredential first (for Dev Containers after 'az login'),
+    then falls back to DefaultAzureCredential for other environments.
+
+    If authentication fails, provides a helpful error message.
+    """
+    scope = "https://cognitiveservices.azure.com/.default"
+
+    # Try Azure CLI first (most common in Dev Containers)
+    try:
+        credential = AzureCliCredential()
+        token = credential.get_token(scope)
+        return token.token
+    except Exception:
+        pass
+
+    # Fall back to DefaultAzureCredential
+    try:
+        credential = DefaultAzureCredential()
+        token = credential.get_token(scope)
+        return token.token
+    except Exception as e:
+        raise RuntimeError(
+            "Azure authentication failed. Please run:\n"
+            "  1. az login --use-device-code\n"
+            "  2. Restart your Jupyter kernel (Kernel → Restart)\n\n"
+            f"Original error: {e}"
+        ) from e
+
+
 def get_embedder() -> OpenAIEmbeddings:
     """
     Get embedder using Azure AI Foundry's OpenAI-compatible endpoint.
@@ -79,13 +112,12 @@ def get_embedder() -> OpenAIEmbeddings:
     Uses Azure CLI credentials to authenticate with the inference endpoint.
     """
     config = get_agent_config()
-    credential = DefaultAzureCredential()
-    token = credential.get_token("https://cognitiveservices.azure.com/.default")
+    token = _get_azure_token()
 
     return OpenAIEmbeddings(
         model=config.embedding_name,
         base_url=config.inference_endpoint,
-        api_key=token.token,
+        api_key=token,
     )
 
 
@@ -96,11 +128,10 @@ def get_llm() -> OpenAILLM:
     Uses Azure CLI credentials to authenticate with the inference endpoint.
     """
     config = get_agent_config()
-    credential = DefaultAzureCredential()
-    token = credential.get_token("https://cognitiveservices.azure.com/.default")
+    token = _get_azure_token()
 
     return OpenAILLM(
         model_name=config.model_name,
         base_url=config.inference_endpoint,
-        api_key=token.token,
+        api_key=token,
     )
