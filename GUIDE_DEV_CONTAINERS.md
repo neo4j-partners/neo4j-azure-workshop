@@ -27,6 +27,8 @@
 
    > **Note:** The setup script clears the `.azure/` directory and Azure-related settings from `.env` to ensure a fresh deployment. Neo4j settings in `.env` are preserved. See [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) for details.
 
+   > **Note:** If you encounter a `RoleAssignmentExists` error on redeployment, run `azd env set SKIP_ROLE_ASSIGNMENTS true` and then `azd up` again.
+
 4. **Follow the prompts:**
    ```
    ? Enter a unique environment name: mydev
@@ -36,20 +38,34 @@
    > 2. your-existing-resource-group
    ```
    - **Environment name:** Any word (e.g., `mydev`, `workshop`)
-   - **Resource group:** Select your existing RG, or choose "Create a new resource group"
+   - **Resource group:** Workshop participants should select the resource group mentioned above. Otherwise, select your existing RG or choose "Create a new resource group".
 
-5. **Restore Neo4j database (non-workshop only):**
+5. **Update Model Token Limits:**
+
+   This creates an Azure AI Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project.
+
+   Click **Models** in the left sidebar to see your deployments:
+
+   ![Models Section](images/models_section.png)
+
+   Click on each model and update the **Tokens per Minute Rate Limit** to increase throughput for the workshop:
+
+   ![Token Limits](images/token_limits.png)
+
+   See [docs/FOUNDRY_GUIDE.md](docs/FOUNDRY_GUIDE.md) for more details.
+
+6. **Restore Neo4j database (non-workshop only):**
    If you're not in a workshop with a pre-populated Neo4j database, restore the sample data:
    ```bash
    uv run scripts/restore_neo4j.py
    ```
 
-6. **Setup environment:**
+7. **Setup environment:**
    ```bash
    uv run setup_env.py
    ```
 
-7. **Choose your path:**
+8. **Choose your path:**
 
    **Path A: Workshop (Guided Notebooks)**
    ```bash
@@ -59,14 +75,14 @@
    After setup completes, **refresh your browser** to detect the new Jupyter kernel, then follow the workshop guide in [`new-workshops/`](new-workshops/README.md)
 
    **Path B: Full Server (API Development)**
-   Continue with steps 8-9 below to run the complete API server.
+   Continue with steps 9-10 below to run the complete API server.
 
-8. **Run the server:**
+9. **Run the server:**
    ```bash
    uv run uvicorn api.main:create_app --factory --reload
    ```
 
-9. **Test API:**
+10. **Test API:**
    ```bash
    # Basic test - check agent status
    uv run python src/test_server.py basic

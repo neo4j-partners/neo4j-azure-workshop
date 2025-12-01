@@ -80,7 +80,8 @@ Or edit `infra/main.parameters.json`:
 If you encounter `RoleAssignmentExists` errors on redeployment:
 
 ```bash
-azd up --parameter skipRoleAssignments=true
+azd env set SKIP_ROLE_ASSIGNMENTS true
+azd up
 ```
 
 ### Deploying Container App Later
