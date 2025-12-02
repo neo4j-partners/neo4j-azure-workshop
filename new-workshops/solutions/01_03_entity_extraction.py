@@ -12,7 +12,7 @@ import asyncio
 from neo4j import GraphDatabase
 from neo4j_graphrag.experimental.pipeline.kg_builder import SimpleKGPipeline
 
-from config import Neo4jConfig, get_llm, get_embedder
+from config import Neo4jConfig, get_tracked_llm, get_tracked_embedder
 
 # Sample text representing SEC 10-K filing content
 SAMPLE_TEXT = """
@@ -191,8 +191,8 @@ async def main():
 
         # Initialize LLM and embedder
         print("\nInitializing LLM and embedder...")
-        llm = get_llm()
-        embedder = get_embedder()
+        llm = get_tracked_llm("01_03_entity_extraction")
+        embedder = get_tracked_embedder("01_03_entity_extraction")
         print(f"LLM: {llm.model_name}")
         print(f"Embedder: {embedder.model}")
 

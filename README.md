@@ -52,19 +52,9 @@ azd up
 
 > **Note:** For full deployment options (including Container App), see [docs/AZURE_DEPLOY_GUIDE.md](docs/AZURE_DEPLOY_GUIDE.md).
 
-### 3. Update Model Token Limits
+### 3. View Deployed Models
 
-This creates an Microsoft Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project. Click **Build** in the top navigation bar, then select your project.
-
-Click **Models** in the left sidebar to see your deployments:
-
-![Models Section](images/models_section.png)
-
-Click on each model and update the **Tokens per Minute Rate Limit** to increase throughput for the workshop:
-
-![Token Limits](images/token_limits.png)
-
-See [docs/FOUNDRY_GUIDE.md](docs/FOUNDRY_GUIDE.md) for more details.
+This creates a Microsoft Foundry project with two model deployments: **gpt-4o-mini** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project and deployed models.
 
 ### 4. Install Dependencies
 Use `uv` to sync dependencies defined in `pyproject.toml`.
@@ -151,3 +141,55 @@ For individual test options and API endpoint details, see [docs/SERVER_OVERVIEW.
 | [docs/SERVER_OVERVIEW.md](docs/SERVER_OVERVIEW.md) | API endpoints, testing options, environment variables |
 | [docs/AZ_CLI_GUIDE.md](docs/AZ_CLI_GUIDE.md) | Azure CLI reference commands |
 | [docs/observability.md](docs/observability.md) | Monitoring and observability setup |
+
+## Token Usage Tracking
+
+The workshop solutions include built-in token counting to help monitor Azure Foundry API usage. Token counts are tracked for both LLM and embedding calls and persisted to `new-workshops/solutions/token_usage.json`.
+
+### Running the Token Report
+
+```bash
+# View current token usage
+uv run python new-workshops/solutions/token_report.py
+
+# Reset all counts before a fresh run
+uv run python new-workshops/solutions/token_report.py --reset
+
+# Output raw JSON data
+uv run python new-workshops/solutions/token_report.py --json
+```
+
+### Batch Run for Token Measurement
+
+To measure total token usage across all retriever and agent solutions (skipping data pipeline scripts that modify the database):
+
+```bash
+# Run all solutions from 02 onward (menu items 4-11)
+uv run python new-workshops/main.py 12
+```
+
+This runs 8 solutions sequentially: Vector Retriever, Vector Cypher Retriever, Text2Cypher Retriever, Simple Agent, Vector Graph Agent, Text2Cypher Agent, Fulltext Search, and Hybrid Search.
+
+### Sample Report Output
+
+```
+======================================================================
+TOKEN USAGE REPORT
+======================================================================
+
+OVERALL TOTALS
+----------------------------------------
+  LLM Input Tokens:          12,450
+  LLM Output Tokens:          3,280
+  Embedding Tokens:           8,920
+  ────────────────────────────
+  TOTAL TOKENS:              24,650
+
+USAGE BY SCRIPT
+----------------------------------------------------------------------
+Script                              LLM In     LLM Out      Embed
+----------------------------------------------------------------------
+02_01_vector_retriever               1,200         450      1,100
+02_02_vector_cypher_retriever        2,100         620      1,400
+...
+```

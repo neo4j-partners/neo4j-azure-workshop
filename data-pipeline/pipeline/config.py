@@ -96,7 +96,7 @@ class LLMSettings(BaseSettings):
     )
 
     deployment_name: str = Field(
-        default="gpt-4o",
+        default="gpt-4o-mini",
         validation_alias="AZURE_AI_MODEL_NAME",
         description="Name of the chat model deployment",
     )

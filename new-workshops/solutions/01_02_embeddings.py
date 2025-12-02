@@ -15,7 +15,7 @@ from neo4j_graphrag.experimental.components.text_splitters.fixed_size_splitter i
     FixedSizeSplitter,
 )
 
-from config import Neo4jConfig, get_embedder
+from config import Neo4jConfig, get_tracked_embedder
 
 # Sample text representing SEC 10-K filing content
 SAMPLE_TEXT = """
@@ -180,7 +180,7 @@ async def main():
 
         # Generate embeddings
         print("\nGenerating embeddings...")
-        embedder = get_embedder()
+        embedder = get_tracked_embedder("01_02_embeddings")
         chunk_data = generate_embeddings(embedder, chunks)
         print(f"Generated embeddings for {len(chunk_data)} chunks")
         print(f"Embedding dimensions: {len(chunk_data[0]['embedding'])}")

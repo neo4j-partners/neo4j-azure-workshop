@@ -10,7 +10,7 @@ Run with: uv run python solutions/01_01_vector_retriever.py
 from neo4j_graphrag.generation import GraphRAG
 from neo4j_graphrag.retrievers import VectorRetriever
 
-from config import get_embedder, get_llm, get_neo4j_driver
+from config import get_tracked_embedder, get_tracked_llm, get_neo4j_driver
 
 
 def create_vector_retriever(driver, embedder) -> VectorRetriever:
@@ -48,8 +48,8 @@ def demo_rag_search(llm, retriever: VectorRetriever, query: str) -> None:
 def main():
     """Run vector retriever demos."""
     with get_neo4j_driver() as driver:
-        embedder = get_embedder()
-        llm = get_llm()
+        embedder = get_tracked_embedder("02_01_vector_retriever")
+        llm = get_tracked_llm("02_01_vector_retriever")
         retriever = create_vector_retriever(driver, embedder)
 
         # Demo 1: Direct vector search

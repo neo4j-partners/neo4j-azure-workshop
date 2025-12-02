@@ -5,14 +5,19 @@ This module provides common functionality for Neo4j connections,
 Microsoft Foundry integration, and configuration management.
 """
 
+import json
+import threading
 from contextlib import contextmanager
+from datetime import datetime
 from pathlib import Path
+from typing import Any
 
+import tiktoken
 from azure.identity import AzureCliCredential, DefaultAzureCredential
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from neo4j_graphrag.embeddings import OpenAIEmbeddings
-from neo4j_graphrag.llm import OpenAILLM
+from neo4j_graphrag.llm import LLMResponse, OpenAILLM
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -37,7 +42,7 @@ class AgentConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", extra="ignore")
 
     project_endpoint: str = Field(validation_alias="AZURE_AI_PROJECT_ENDPOINT")
-    model_name: str = Field(default="gpt-4o", validation_alias="AZURE_AI_MODEL_NAME")
+    model_name: str = Field(default="gpt-4o-mini", validation_alias="AZURE_AI_MODEL_NAME")
     embedding_name: str = Field(
         default="text-embedding-ada-002",
         validation_alias="AZURE_AI_EMBEDDING_NAME",
@@ -134,4 +139,228 @@ def get_llm() -> OpenAILLM:
         model_name=config.model_name,
         base_url=config.inference_endpoint,
         api_key=token,
+    )
+
+
+# =============================================================================
+# Token Counting
+# =============================================================================
+
+# Path to token usage JSON file (in solutions directory)
+TOKEN_USAGE_FILE = Path(__file__).parent / "token_usage.json"
+
+
+class TokenCounter:
+    """
+    Thread-safe token counter that persists usage to JSON.
+
+    Tracks:
+    - LLM input tokens (prompts)
+    - LLM output tokens (completions)
+    - Embedding tokens
+
+    Usage is appended to a JSON file for later analysis.
+    """
+
+    def __init__(self, output_file: Path = TOKEN_USAGE_FILE):
+        self.output_file = output_file
+        self._lock = threading.Lock()
+        self._encoder = tiktoken.get_encoding("cl100k_base")  # GPT-4/ada-002
+
+    def count_tokens(self, text: str) -> int:
+        """Count tokens in a string."""
+        if not text:
+            return 0
+        return len(self._encoder.encode(text))
+
+    def _load_usage(self) -> dict:
+        """Load existing usage data from JSON."""
+        if self.output_file.exists():
+            try:
+                return json.loads(self.output_file.read_text())
+            except (json.JSONDecodeError, OSError):
+                pass
+        return {"sessions": [], "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0}}
+
+    def _save_usage(self, data: dict) -> None:
+        """Save usage data to JSON."""
+        self.output_file.write_text(json.dumps(data, indent=2))
+
+    def record_llm_call(
+        self,
+        script: str,
+        input_text: str,
+        output_text: str,
+        model: str,
+    ) -> dict:
+        """Record an LLM call with token counts."""
+        input_tokens = self.count_tokens(input_text)
+        output_tokens = self.count_tokens(output_text)
+
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "llm",
+            "script": script,
+            "model": model,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+        }
+
+        with self._lock:
+            data = self._load_usage()
+            data["sessions"].append(entry)
+            data["totals"]["llm_input"] += input_tokens
+            data["totals"]["llm_output"] += output_tokens
+            self._save_usage(data)
+
+        return entry
+
+    def record_embedding_call(
+        self,
+        script: str,
+        texts: list[str],
+        model: str,
+    ) -> dict:
+        """Record an embedding call with token counts."""
+        total_tokens = sum(self.count_tokens(t) for t in texts)
+
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "embedding",
+            "script": script,
+            "model": model,
+            "num_texts": len(texts),
+            "tokens": total_tokens,
+        }
+
+        with self._lock:
+            data = self._load_usage()
+            data["sessions"].append(entry)
+            data["totals"]["embedding"] += total_tokens
+            self._save_usage(data)
+
+        return entry
+
+    def get_totals(self) -> dict:
+        """Get current token totals."""
+        with self._lock:
+            data = self._load_usage()
+            return data["totals"]
+
+    def reset(self) -> None:
+        """Reset all token counts."""
+        with self._lock:
+            self._save_usage({
+                "sessions": [],
+                "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0},
+            })
+
+
+# Global token counter instance
+token_counter = TokenCounter()
+
+
+class TrackedLLM(OpenAILLM):
+    """
+    OpenAILLM wrapper that tracks token usage.
+
+    Automatically records all LLM calls to the token usage JSON file.
+    """
+
+    def __init__(self, *args, script_name: str = "unknown", **kwargs):
+        super().__init__(*args, **kwargs)
+        self._script_name = script_name
+
+    def invoke(self, input: str, **kwargs: Any) -> LLMResponse:
+        """Invoke LLM and track tokens."""
+        response = super().invoke(input, **kwargs)
+        # Include system_instruction in token count if provided
+        full_input = input
+        if "system_instruction" in kwargs and kwargs["system_instruction"]:
+            full_input = kwargs["system_instruction"] + "\n" + input
+        token_counter.record_llm_call(
+            script=self._script_name,
+            input_text=full_input,
+            output_text=response.content,
+            model=self.model_name,
+        )
+        return response
+
+    async def ainvoke(self, input: str, **kwargs: Any) -> LLMResponse:
+        """Async invoke LLM and track tokens."""
+        response = await super().ainvoke(input, **kwargs)
+        # Include system_instruction in token count if provided
+        full_input = input
+        if "system_instruction" in kwargs and kwargs["system_instruction"]:
+            full_input = kwargs["system_instruction"] + "\n" + input
+        token_counter.record_llm_call(
+            script=self._script_name,
+            input_text=full_input,
+            output_text=response.content,
+            model=self.model_name,
+        )
+        return response
+
+
+class TrackedEmbeddings(OpenAIEmbeddings):
+    """
+    OpenAIEmbeddings wrapper that tracks token usage.
+
+    Automatically records all embedding calls to the token usage JSON file.
+    """
+
+    def __init__(self, *args, script_name: str = "unknown", **kwargs):
+        super().__init__(*args, **kwargs)
+        self._script_name = script_name
+
+    def embed_query(self, text: str) -> list[float]:
+        """Embed a single query and track tokens."""
+        result = super().embed_query(text)
+        token_counter.record_embedding_call(
+            script=self._script_name,
+            texts=[text],
+            model=self.model,
+        )
+        return result
+
+
+def get_tracked_llm(script_name: str) -> TrackedLLM:
+    """
+    Get a token-tracking LLM using Microsoft Foundry's endpoint.
+
+    Args:
+        script_name: Name of the calling script (for tracking purposes)
+
+    Returns:
+        TrackedLLM instance that logs all token usage
+    """
+    config = get_agent_config()
+    token = _get_azure_token()
+
+    return TrackedLLM(
+        model_name=config.model_name,
+        base_url=config.inference_endpoint,
+        api_key=token,
+        script_name=script_name,
+    )
+
+
+def get_tracked_embedder(script_name: str) -> TrackedEmbeddings:
+    """
+    Get a token-tracking embedder using Microsoft Foundry's endpoint.
+
+    Args:
+        script_name: Name of the calling script (for tracking purposes)
+
+    Returns:
+        TrackedEmbeddings instance that logs all token usage
+    """
+    config = get_agent_config()
+    token = _get_azure_token()
+
+    return TrackedEmbeddings(
+        model=config.embedding_name,
+        base_url=config.inference_endpoint,
+        api_key=token,
+        script_name=script_name,
     )

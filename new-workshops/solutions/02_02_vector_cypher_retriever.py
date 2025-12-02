@@ -10,7 +10,7 @@ Run with: uv run python solutions/01_02_vector_cypher_retriever.py
 from neo4j_graphrag.generation import GraphRAG
 from neo4j_graphrag.retrievers import VectorCypherRetriever
 
-from config import get_embedder, get_llm, get_neo4j_driver
+from config import get_tracked_embedder, get_tracked_llm, get_neo4j_driver
 
 # Retrieval query 1: Company + Risk context
 COMPANY_RISK_QUERY = """
@@ -66,8 +66,8 @@ def demo_retriever(llm, retriever: VectorCypherRetriever, query: str, descriptio
 def main():
     """Run vector cypher retriever demos with different retrieval queries."""
     with get_neo4j_driver() as driver:
-        embedder = get_embedder()
-        llm = get_llm()
+        embedder = get_tracked_embedder("02_02_vector_cypher_retriever")
+        llm = get_tracked_llm("02_02_vector_cypher_retriever")
 
         # Demo 1: Company + Risk context
         retriever = create_vector_cypher_retriever(driver, embedder, COMPANY_RISK_QUERY)

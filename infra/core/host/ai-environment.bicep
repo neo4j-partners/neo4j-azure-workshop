@@ -6,9 +6,9 @@ param location string
 param aiProjectName string
 @description('The Storage Account resource name.')
 param storageAccountName string
-@description('The AI Services resource name.')
+@description('The Microsoft Foundry Services resource name.')
 param aiServicesName string
-@description('The AI Services model deployments.')
+@description('The Microsoft Foundry Services model deployments.')
 param aiServiceModelDeployments array = []
 @description('The Log Analytics resource name.')
 param logAnalyticsName string = ''

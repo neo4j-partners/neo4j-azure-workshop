@@ -11,7 +11,7 @@ param location string = resourceGroup().location
 
 @description('The Microsoft Foundry Hub resource name. If ommited will be generated')
 param aiProjectName string = ''
-@description('The AI Services resource name. If ommited will be generated')
+@description('The Microsoft Foundry Services resource name. If ommited will be generated')
 param aiServicesName string = ''
 @description('The Azure Storage Account resource name. If ommited will be generated')
 param storageAccountName string = ''
@@ -25,18 +25,18 @@ param agentModelFormat string = 'OpenAI'
 @description('Name of agent to deploy')
 param agentName string = 'arches-agent'
 @description('Name of the chat model to deploy')
-param agentModelName string = 'gpt-4o'
+param agentModelName string = 'gpt-4o-mini'
 @description('Name of the model deployment')
-param agentDeploymentName string = 'gpt-4o'
+param agentDeploymentName string = 'gpt-4o-mini'
 
 @description('Version of the chat model to deploy')
-param agentModelVersion string = '2024-08-06'
+param agentModelVersion string = '2024-07-18'
 
 @description('Sku of the chat deployment')
 param agentDeploymentSku string = 'GlobalStandard'
 
 @description('Capacity of the chat deployment')
-param agentDeploymentCapacity int = 20
+param agentDeploymentCapacity int = 5
 
 // Embedding model
 @description('Format of the embedding model to deploy')
@@ -51,7 +51,7 @@ param embeddingModelVersion string = '2'
 @description('Sku of the embedding deployment')
 param embeddingDeploymentSku string = 'GlobalStandard'
 @description('Capacity of the embedding deployment')
-param embeddingDeploymentCapacity int = 120
+param embeddingDeploymentCapacity int = 5
 
 param templateValidationMode bool = false
 

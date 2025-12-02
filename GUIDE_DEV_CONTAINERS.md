@@ -40,19 +40,9 @@
    - **Environment name:** Any word (e.g., `mydev`, `workshop`)
    - **Resource group:** Workshop participants should select the resource group mentioned above. Otherwise, select your existing RG or choose "Create a new resource group".
 
-5. **Update Model Token Limits:**
+5. **View Deployed Models:**
 
-   This creates an Microsoft Foundry project with two model deployments: **gpt-4o** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project.
-
-   Click **Models** in the left sidebar to see your deployments:
-
-   ![Models Section](images/models_section.png)
-
-   Click on each model and update the **Tokens per Minute Rate Limit** to increase throughput for the workshop:
-
-   ![Token Limits](images/token_limits.png)
-
-   See [docs/FOUNDRY_GUIDE.md](docs/FOUNDRY_GUIDE.md) for more details.
+   This creates a Microsoft Foundry project with two model deployments: **gpt-4o-mini** (for chat completions) and **text-embedding-ada-002** (for vector embeddings). Open [ai.azure.com](https://ai.azure.com/) in the same browser where you're logged into Azure to view your project and deployed models.
 
 6. **Restore Neo4j database (non-workshop only):**
    If you're not in a workshop with a pre-populated Neo4j database, restore the sample data:
@@ -108,7 +98,7 @@ This project uses **resource-group-scoped deployment** - all Azure resources dep
 ```
 Your Resource Group
 ├── Microsoft Foundry Project (AI Hub + Project)
-├── Azure OpenAI Service (gpt-4o + text-embedding-ada-002)
+├── Azure OpenAI Service (gpt-4o-mini + text-embedding-ada-002)
 ├── Storage Account
 ├── Container Registry
 ├── Container Apps Environment

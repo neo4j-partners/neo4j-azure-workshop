@@ -21,6 +21,7 @@ dependencies = [
     "openai>=1.0.0",
     "ipykernel>=6.0.0",
     "nbstripout>=0.8.0",
+    "tiktoken>=0.7.0",
     # Observability
     "azure-core-tracing-opentelemetry>=1.0.0b12",
     "azure-monitor-opentelemetry-exporter>=1.0.0b44",

@@ -30,7 +30,7 @@ from neo4j import GraphDatabase
 from neo4j_graphrag.retrievers import HybridRetriever, HybridCypherRetriever
 from neo4j_graphrag.types import RetrieverResultItem
 
-from config import Neo4jConfig, get_embedder
+from config import Neo4jConfig, get_tracked_embedder
 
 # Index names
 VECTOR_INDEX = "chunkEmbeddings"
@@ -217,7 +217,7 @@ def main() -> None:
         print(f"Connected to Neo4j: {config.uri}")
 
         # Initialize embedder
-        embedder = get_embedder()
+        embedder = get_tracked_embedder("05_02_hybrid_search")
         print(f"Embedder: {embedder.model}")
 
         # Check indexes exist

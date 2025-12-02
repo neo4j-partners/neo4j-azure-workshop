@@ -39,7 +39,7 @@ class AgentConfig(BaseSettings):
         validation_alias="AZURE_AI_AGENT_NAME",
     )
     model: str = Field(
-        default="gpt-4o",
+        default="gpt-4o-mini",
         validation_alias="AZURE_AI_MODEL_NAME",
     )
     instructions: str = Field(

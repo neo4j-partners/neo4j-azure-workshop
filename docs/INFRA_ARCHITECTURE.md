@@ -18,7 +18,7 @@
 | Resource | Purpose |
 |----------|---------|
 | **Microsoft Foundry Project** | Hosts the AI agent and model deployments |
-| **Microsoft Foundry Services** | Provides GPT-4o chat and text-embedding-ada-002 embedding models |
+| **Microsoft Foundry Services** | Provides GPT-4o-mini chat and text-embedding-ada-002 embedding models |
 | **Azure Container Apps** | Hosts the FastAPI application |
 | **Azure Container Registry** | Stores Docker images for deployment |
 | **Azure Storage Account** | Required by AI Foundry for agent state |
@@ -27,7 +27,7 @@
 
 ### AI Agent
 
-- A persistent agent named `arches-agent` (configurable) using `gpt-4o`
+- A persistent agent named `arches-agent` (configurable) using `gpt-4o-mini`
 - Server-managed conversation threads stored in Microsoft Foundry
 - System instructions defining agent behavior
 
@@ -68,7 +68,7 @@ infra/
     │   ├── container-app-upsert.bicep    # Container app create/update logic
     │   └── container-registry.bicep      # Azure Container Registry
     ├── ai/
-    │   └── cognitiveservices.bicep   # AI Services + model deployments
+    │   └── cognitiveservices.bicep   # Microsoft Foundry Services + model deployments
     ├── monitor/
     │   ├── loganalytics.bicep        # Log Analytics workspace
     │   └── applicationinsights.bicep # Application Insights
@@ -97,7 +97,7 @@ flowchart LR
     subgraph Azure["Azure Resources"]
         RG[Resource Group]
         PROJ[AI Foundry Project]
-        AOAI[AI Services + Models]
+        AOAI[Microsoft Foundry Services + Models]
         ACR[Container Registry]
         ACA[Container App]
         ST[Storage Account]
@@ -128,7 +128,7 @@ flowchart LR
 
 | Model | Type | SKU | Purpose |
 |-------|------|-----|---------|
-| `gpt-4o` | OpenAI | GlobalStandard | Chat completion for agent |
+| `gpt-4o-mini` | OpenAI | GlobalStandard | Chat completion for agent |
 | `text-embedding-ada-002` | OpenAI | GlobalStandard | Embeddings for semantic search |
 
 ### Security & RBAC
@@ -172,7 +172,7 @@ from agent_framework.azure import AzureAIAgentClient
 # Create client connected to Foundry project
 client = AzureAIAgentClient(
     project_endpoint="https://<region>.api.azureml.ms/agents/v1.0/subscriptions/.../projects/...",
-    model_deployment_name="gpt-4o",
+    model_deployment_name="gpt-4o-mini",
     async_credential=AzureCliCredential()
 )
 
@@ -359,7 +359,7 @@ Currently threads are stored in memory (a Python dictionary). This means:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `AZURE_AI_AGENT_NAME` | `arches-agent` | Name of the agent |
-| `AZURE_AI_MODEL_NAME` | `gpt-4o` | Model deployment name |
+| `AZURE_AI_MODEL_NAME` | `gpt-4o-mini` | Model deployment name |
 | `AZURE_AI_EMBEDDING_NAME` | - | Embedding model deployment |
 | `AZURE_OPENAI_ENDPOINT` | - | Azure OpenAI endpoint for embeddings |
 | `NEO4J_URI` | - | Neo4j connection URI |
@@ -394,7 +394,7 @@ Uses `AzureCliCredential` - requires running `az login` first.
 
 ### Production
 
-Uses managed identity (`AZURE_CLIENT_ID` environment variable). The Container App's identity has roles assigned to access AI Services.
+Uses managed identity (`AZURE_CLIENT_ID` environment variable). The Container App's identity has roles assigned to access Microsoft Foundry Services.
 
 ---
 

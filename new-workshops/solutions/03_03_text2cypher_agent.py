@@ -12,7 +12,6 @@ Run with: uv run python solutions/02_03_text2cypher_agent.py
 import asyncio
 from typing import Annotated
 
-from neo4j_graphrag.llm import OpenAILLM
 from neo4j_graphrag.retrievers import VectorCypherRetriever, Text2CypherRetriever
 from neo4j_graphrag.schema import get_schema
 from pydantic import Field
@@ -21,7 +20,7 @@ from agent_framework.azure import AzureAIClient
 from azure.identity import DefaultAzureCredential
 from azure.identity.aio import AzureCliCredential
 
-from config import get_neo4j_driver, get_agent_config, get_embedder
+from config import get_neo4j_driver, get_agent_config, get_tracked_embedder, TrackedLLM
 
 # Retrieval query for vector search with graph context
 RETRIEVAL_QUERY = """
@@ -58,15 +57,16 @@ The question is:
 def create_tools(driver):
     """Create tools with the given driver."""
     config = get_agent_config()
-    embedder = get_embedder()
+    embedder = get_tracked_embedder("03_03_text2cypher_agent")
 
-    # LLM for Cypher generation uses same Microsoft Foundry endpoint
+    # LLM for Cypher generation uses same Microsoft Foundry endpoint (with tracking)
     credential = DefaultAzureCredential()
     token = credential.get_token("https://cognitiveservices.azure.com/.default")
-    cypher_llm = OpenAILLM(
+    cypher_llm = TrackedLLM(
         model_name=config.model_name,
         base_url=config.inference_endpoint,
         api_key=token.token,
+        script_name="03_03_text2cypher_agent",
     )
 
     vector_retriever = VectorCypherRetriever(

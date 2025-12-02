@@ -15,19 +15,19 @@
       "value": "${AZURE_AI_MODEL_FORMAT=OpenAI}"
     },
     "agentModelName": {
-      "value": "${AZURE_AI_MODEL_NAME=gpt-4o}"
+      "value": "${AZURE_AI_MODEL_NAME=gpt-4o-mini}"
     },
     "agentDeploymentName": {
-      "value": "${AZURE_AI_MODEL_NAME=gpt-4o}"
+      "value": "${AZURE_AI_MODEL_NAME=gpt-4o-mini}"
     },
     "agentModelVersion": {
-      "value": "${AZURE_AI_MODEL_VERSION=2024-08-06}"
+      "value": "${AZURE_AI_MODEL_VERSION=2024-07-18}"
     },
     "agentDeploymentSku": {
       "value": "${AZURE_AI_MODEL_SKU=GlobalStandard}"
     },
     "agentDeploymentCapacity": {
-      "value": "${AZURE_AI_MODEL_CAPACITY=20}"
+      "value": "${AZURE_AI_MODEL_CAPACITY=5}"
     },
     "embeddingModelFormat": {
       "value": "${AZURE_AI_EMBEDDING_FORMAT=OpenAI}"
@@ -45,7 +45,7 @@
       "value": "${AZURE_AI_EMBEDDING_SKU=GlobalStandard}"
     },
     "embeddingDeploymentCapacity": {
-      "value": "${AZURE_AI_EMBEDDING_CAPACITY=120}"
+      "value": "${AZURE_AI_EMBEDDING_CAPACITY=5}"
     }
   }
 }

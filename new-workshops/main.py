@@ -5,8 +5,13 @@ Workshop Solution Runner
 Interactive menu to run workshop solutions.
 
 Usage from root directory:
-    uv run python new-workshop/main.py          # Interactive menu
-    uv run python new-workshop/main.py 4        # Run solution 4 directly
+    uv run python new-workshops/main.py          # Interactive menu
+    uv run python new-workshops/main.py 4        # Run solution 4 directly
+    uv run python new-workshops/main.py 12       # Run all 02+ solutions (4-11)
+
+Token Usage:
+    uv run python new-workshops/solutions/token_report.py        # Show report
+    uv run python new-workshops/solutions/token_report.py --reset  # Reset counts
 """
 
 import asyncio
@@ -65,19 +70,15 @@ def print_menu():
     print(" 10. Fulltext Search")
     print(" 11. Hybrid Search")
 
+    print("\nBatch:")
+    print(" 12. Run ALL from 02 onward (4-11) - for token counting")
+
     print("\n  0. Exit")
     print("=" * 50)
 
 
-def run_solution(choice: int) -> bool:
-    """Run the selected solution. Returns False to exit."""
-    if choice == 0:
-        return False
-
-    if choice < 1 or choice > len(SOLUTIONS):
-        print("Invalid choice. Please try again.")
-        return True
-
+def run_single_solution(choice: int) -> None:
+    """Run a single solution by menu number (1-11)."""
     module_name, title, is_async, entry_func = SOLUTIONS[choice - 1]
 
     print(f"\n>>> Running: {title}")
@@ -98,10 +99,48 @@ def run_solution(choice: int) -> bool:
 
     except KeyboardInterrupt:
         print("\n\nInterrupted.")
+        raise
     except Exception as e:
         print(f"Error: {e}")
 
     print("-" * 50)
+
+
+def run_batch_from_02() -> None:
+    """Run all solutions from 02 onward (menu items 4-11) for token counting."""
+    print("\n" + "=" * 50)
+    print("BATCH RUN: All solutions from 02 onward (4-11)")
+    print("This will run 8 solutions to measure total token usage.")
+    print("=" * 50)
+
+    # Menu items 4-11 correspond to SOLUTIONS indices 3-10
+    for menu_num in range(4, 12):
+        try:
+            run_single_solution(menu_num)
+        except KeyboardInterrupt:
+            print("\n\nBatch interrupted.")
+            break
+
+    print("\n" + "=" * 50)
+    print("BATCH COMPLETE")
+    print("Run: uv run python solutions/token_report.py")
+    print("=" * 50)
+
+
+def run_solution(choice: int) -> bool:
+    """Run the selected solution. Returns False to exit."""
+    if choice == 0:
+        return False
+
+    if choice == 12:
+        run_batch_from_02()
+        return True
+
+    if choice < 1 or choice > len(SOLUTIONS):
+        print("Invalid choice. Please try again.")
+        return True
+
+    run_single_solution(choice)
     return True
 
 
@@ -115,7 +154,8 @@ def main():
             return
         except ValueError:
             print(f"Invalid argument: {sys.argv[1]}")
-            print("Usage: uv run python main.py [1-11]")
+            print("Usage: uv run python main.py [1-12]")
+            print("       12 = Run all from 02 onward (4-11)")
             return
 
     print("Workshop Solution Runner")
@@ -123,7 +163,7 @@ def main():
     while True:
         print_menu()
         try:
-            choice = input("\nSelect solution (0-11): ").strip()
+            choice = input("\nSelect solution (0-12): ").strip()
             if not choice:
                 continue
             choice = int(choice)

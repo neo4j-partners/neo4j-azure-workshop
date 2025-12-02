@@ -11,7 +11,7 @@ from neo4j_graphrag.generation import GraphRAG
 from neo4j_graphrag.retrievers import Text2CypherRetriever
 from neo4j_graphrag.schema import get_schema
 
-from config import get_llm, get_neo4j_driver
+from config import get_tracked_llm, get_neo4j_driver
 
 
 def create_text2cypher_retriever(driver, llm) -> Text2CypherRetriever:
@@ -58,7 +58,7 @@ def demo_rag_search(llm, retriever: Text2CypherRetriever, query: str) -> None:
 def main():
     """Run text2cypher retriever demos."""
     with get_neo4j_driver() as driver:
-        llm = get_llm()
+        llm = get_tracked_llm("02_03_text2cypher_retriever")
         retriever = create_text2cypher_retriever(driver, llm)
 
         # Demo 1: Direct Cypher generation

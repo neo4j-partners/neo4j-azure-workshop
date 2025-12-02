@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "timestamp": "2025-12-01T21:06:59.740413",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T21:07:00.069570",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T21:07:01.802460",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    }
+  ],
+  "totals": {
+    "llm_input": 0,
+    "llm_output": 0,
+    "embedding": 26
+  }
+}
