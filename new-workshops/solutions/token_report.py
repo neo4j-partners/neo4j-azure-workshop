@@ -188,6 +188,38 @@ def generate_report(data: dict) -> str:
         usage = model_usage[model]
         lines.append(f"{model:<30} {format_number(usage['tokens']):>12} {usage['calls']:>6}")
 
+    # By Environment (if environment data is present)
+    env_usage = defaultdict(lambda: {"llm_input": 0, "llm_output": 0, "embedding": 0, "calls": 0})
+    has_env_data = False
+
+    for session in sessions:
+        env = session.get("environment")
+        if env:
+            has_env_data = True
+            env_usage[env]["calls"] += 1
+            if session.get("type") == "llm":
+                env_usage[env]["llm_input"] += session.get("input_tokens", 0)
+                env_usage[env]["llm_output"] += session.get("output_tokens", 0)
+            elif session.get("type") == "embedding":
+                env_usage[env]["embedding"] += session.get("tokens", 0)
+
+    if has_env_data:
+        lines.append("")
+        lines.append("USAGE BY ENVIRONMENT")
+        lines.append("-" * 70)
+        lines.append(f"{'Environment':<20} {'LLM In':>10} {'LLM Out':>10} {'Embed':>10} {'Calls':>8}")
+        lines.append("-" * 70)
+
+        for env in sorted(env_usage.keys()):
+            usage = env_usage[env]
+            lines.append(
+                f"{env:<20} "
+                f"{format_number(usage['llm_input']):>10} "
+                f"{format_number(usage['llm_output']):>10} "
+                f"{format_number(usage['embedding']):>10} "
+                f"{usage['calls']:>8}"
+            )
+
     # Recent activity
     lines.append("")
     lines.append("RECENT ACTIVITY (last 10 calls)")

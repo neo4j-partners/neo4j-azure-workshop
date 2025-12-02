@@ -39,7 +39,7 @@ YIELD node, score
 RETRIEVAL_QUERY = """
 MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)
 OPTIONAL MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
-WITH node, score, company, collect(risk.name) as risks
+WITH node, score, company, collect(risk.name)[0..20] as risks
 WHERE score IS NOT NULL
 RETURN
     node.text as text,

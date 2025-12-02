@@ -1,15 +1,5 @@
 {
   "environments": {
-    "workshop-01": {
-      "env_name": "workshop-01",
-      "resource_group": "rg-workshop-01",
-      "region": "eastus2",
-      "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
-      "status": "deployed",
-      "created_at": "2025-12-01T21:24:49.913890",
-      "updated_at": "2025-12-01T21:36:45.897966",
-      "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-01/.env"
-    },
     "workshop-02": {
       "env_name": "workshop-02",
       "resource_group": "rg-workshop-02",
@@ -17,7 +7,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:25:52.574864",
-      "updated_at": "2025-12-01T21:36:45.948875",
+      "updated_at": "2025-12-01T21:52:22.376525",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-02/.env"
     },
     "workshop-03": {
@@ -27,7 +17,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:26:56.557632",
-      "updated_at": "2025-12-01T21:36:45.994265",
+      "updated_at": "2025-12-01T21:52:22.416317",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-03/.env"
     },
     "workshop-04": {
@@ -37,7 +27,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:27:29.377368",
-      "updated_at": "2025-12-01T21:36:46.032835",
+      "updated_at": "2025-12-01T21:52:22.457763",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-04/.env"
     },
     "workshop-05": {
@@ -47,7 +37,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:28:03.986839",
-      "updated_at": "2025-12-01T21:36:46.070586",
+      "updated_at": "2025-12-01T21:52:22.495549",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-05/.env"
     },
     "workshop-06": {
@@ -57,7 +47,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:29:07.233733",
-      "updated_at": "2025-12-01T21:36:46.112413",
+      "updated_at": "2025-12-01T21:52:22.534923",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-06/.env"
     },
     "workshop-07": {
@@ -67,7 +57,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:29:11.234648",
-      "updated_at": "2025-12-01T21:36:46.151110",
+      "updated_at": "2025-12-01T21:52:22.572078",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-07/.env"
     },
     "workshop-08": {
@@ -77,7 +67,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:29:14.944182",
-      "updated_at": "2025-12-01T21:36:46.190108",
+      "updated_at": "2025-12-01T21:52:22.608850",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-08/.env"
     },
     "workshop-09": {
@@ -87,7 +77,7 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:29:18.516347",
-      "updated_at": "2025-12-01T21:36:46.228382",
+      "updated_at": "2025-12-01T21:52:22.644763",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-09/.env"
     },
     "workshop-10": {
@@ -97,10 +87,10 @@
       "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
       "status": "deployed",
       "created_at": "2025-12-01T21:29:21.910465",
-      "updated_at": "2025-12-01T21:36:46.265788",
+      "updated_at": "2025-12-01T21:52:22.680978",
       "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-10/.env"
     }
   },
   "created_at": "2025-12-01T20:04:47.809370",
-  "updated_at": "2025-12-01T21:36:46.265909"
+  "updated_at": "2025-12-01T22:41:02.104496"
 }

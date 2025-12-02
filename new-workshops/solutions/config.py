@@ -6,6 +6,7 @@ Microsoft Foundry integration, and configuration management.
 """
 
 import json
+import os
 import threading
 import time
 from contextlib import contextmanager
@@ -149,6 +150,7 @@ def get_llm() -> OpenAILLM:
 
 # Path to token usage JSON file (in solutions directory)
 TOKEN_USAGE_FILE = Path(__file__).parent / "token_usage.json"
+TOKEN_USAGE_DIR = Path(__file__).parent / "token_usage"
 
 
 class TokenCounter:
@@ -161,10 +163,22 @@ class TokenCounter:
     - Embedding tokens
 
     Usage is appended to a JSON file for later analysis.
+
+    For parallel execution across processes, set environment variable
+    TOKEN_USAGE_ENV to write to a separate file per environment.
     """
 
-    def __init__(self, output_file: Path = TOKEN_USAGE_FILE):
-        self.output_file = output_file
+    def __init__(self, output_file: Path | None = None):
+        # Check for environment-specific file
+        env_name = os.environ.get("TOKEN_USAGE_ENV")
+        if env_name:
+            TOKEN_USAGE_DIR.mkdir(parents=True, exist_ok=True)
+            self.output_file = TOKEN_USAGE_DIR / f"{env_name}.json"
+        elif output_file:
+            self.output_file = output_file
+        else:
+            self.output_file = TOKEN_USAGE_FILE
+
         self._lock = threading.Lock()
         self._encoder = tiktoken.get_encoding("cl100k_base")  # GPT-4/ada-002
 

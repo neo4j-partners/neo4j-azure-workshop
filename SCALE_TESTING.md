@@ -40,16 +40,8 @@ uv run python scripts/scale_deploy.py destroy --all --yes
 ### Prepare Environments
 
 ```bash
-# Prepare N environments with default settings (eastus2)
+# Prepare N environments
 uv run python scripts/scale_deploy.py prepare --count 5 --prefix workshop
-
-# Prepare for a specific region
-uv run python scripts/scale_deploy.py prepare --count 3 --prefix test --region swedencentral
-
-# Skip resource group creation (use existing)
-uv run python scripts/scale_deploy.py prepare --count 3 --prefix workshop --skip-rg
-
-# Supported regions: eastus2, swedencentral, westus2
 ```
 
 **What happens during preparation:**
@@ -85,9 +77,6 @@ After all `azd up` commands complete:
 ```bash
 # Generate .env files for all environments
 uv run python scripts/scale_deploy.py generate-env --all
-
-# Generate for a specific environment
-uv run python scripts/scale_deploy.py generate-env --env workshop-01
 ```
 
 ### Check Status
@@ -118,22 +107,52 @@ Total: 3 | Deployed: 2 | Prepared: 1 | Failed: 0
 
 ### Run Tests
 
+Tests run **in parallel** by default for faster execution across multiple environments.
+
 ```bash
-# Run batch test (solutions 4-11) on ALL deployed environments
+# Run batch test (solutions 4-11) on ALL deployed environments (parallel)
 uv run python scripts/scale_deploy.py test --all
 
-# Run on a specific environment
-uv run python scripts/scale_deploy.py test --env workshop-01
-
-# Run a specific solution
-uv run python scripts/scale_deploy.py test --env workshop-01 --solution 4
+# Limit parallel execution (e.g., max 3 concurrent tests)
+uv run python scripts/scale_deploy.py test --all --parallel 3
 ```
 
 **How testing works:**
-1. Backs up your current `.env` file
-2. Swaps in the target environment's `.env`
-3. Runs the specified solution(s)
-4. Restores your original `.env`
+1. Each environment runs in a separate subprocess with its own environment variables
+2. Token usage is written to separate files per environment (`token_usage/{env}.json`)
+3. After all tests complete, results are merged into `token_usage.json`
+4. Summary shows pass/fail with timing for each environment
+
+**Sample output:**
+```
+============================================================
+RUNNING TESTS ON 5 ENVIRONMENT(S) (parallel)
+============================================================
+Solution: 12 | Max parallel: 5
+============================================================
+
+Running tests...
+  [1/5] ✓ workshop-03 (42.1s)
+  [2/5] ✓ workshop-01 (45.2s)
+  [3/5] ✗ workshop-04 (12.3s)
+  [4/5] ✓ workshop-02 (47.8s)
+  [5/5] ✓ workshop-05 (46.5s)
+
+============================================================
+RESULTS
+============================================================
+  ✓ workshop-01           (45.2s)
+  ✓ workshop-02           (47.8s)
+  ✓ workshop-03           (42.1s)
+  ✗ workshop-04           (12.3s)
+  ✓ workshop-05           (46.5s)
+
+------------------------------------------------------------
+PASSED: 4 | FAILED: 1 | Total time: 47.8s
+
+Merging token usage from 5 environment(s)...
+  Merged into: new-workshops/solutions/token_usage.json
+```
 
 ### View Token Usage
 
@@ -230,12 +249,29 @@ uv run python new-workshops/solutions/token_report.py
 #   ────────────────────────────
 #   TOTAL TOKENS:              73,950
 #
+# LLM CALL TIMING
+# ----------------------------------------
+#   Total LLM Calls:                 45
+#   Average:                      1.23s
+#   Min:                         456ms
+#   Max:                          3.45s
+#   P99:                          3.21s
+#
 # USAGE BY SCRIPT
 # ----------------------------------------------------------------------
 # Script                              LLM In     LLM Out      Embed
 # ----------------------------------------------------------------------
 # 02_01_vector_retriever               3,600       1,350      3,300
 # 02_02_vector_cypher_retriever        6,300       1,860      4,200
+# ...
+#
+# USAGE BY ENVIRONMENT
+# ----------------------------------------------------------------------
+# Environment          LLM In     LLM Out      Embed    Calls
+# ----------------------------------------------------------------------
+# workshop-01           7,470       1,968      5,352        9
+# workshop-02           7,470       1,968      5,352        9
+# workshop-03           7,470       1,968      5,352        9
 # ...
 
 # Cleanup
@@ -298,32 +334,10 @@ az cognitiveservices account purge \
 
 ### Rate Limiting During Tests
 
-If tests fail due to rate limiting:
-
-1. Run tests sequentially instead of batch:
-   ```bash
-   uv run python scripts/scale_deploy.py test --env workshop-01 --solution 4
-   uv run python scripts/scale_deploy.py test --env workshop-01 --solution 5
-   # ... etc
-   ```
-
-2. Add delays between environments (manual):
-   ```bash
-   uv run python scripts/scale_deploy.py test --env workshop-01
-   sleep 60
-   uv run python scripts/scale_deploy.py test --env workshop-02
-   ```
-
-### .env Not Restored
-
-If something goes wrong and your `.env` isn't restored:
+If tests fail due to rate limiting, limit parallel execution:
 
 ```bash
-# Check for backup
-ls -la .env.backup
-
-# Restore manually if needed
-cp .env.backup .env
+uv run python scripts/scale_deploy.py test --all --parallel 2
 ```
 
 ## See Also

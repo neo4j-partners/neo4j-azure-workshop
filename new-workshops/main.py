@@ -81,8 +81,8 @@ def run_single_solution(choice: int) -> None:
     """Run a single solution by menu number (1-11)."""
     module_name, title, is_async, entry_func = SOLUTIONS[choice - 1]
 
-    print(f"\n>>> Running: {title}")
-    print("-" * 50)
+    print(f"\n>>> Running: {title}", flush=True)
+    print("-" * 50, flush=True)
 
     try:
         module = importlib.import_module(module_name)

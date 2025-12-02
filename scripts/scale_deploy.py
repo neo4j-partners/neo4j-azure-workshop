@@ -19,12 +19,14 @@ import os
 import shutil
 import subprocess
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-# Supported Azure regions for Microsoft Foundry
-SUPPORTED_REGIONS = ["eastus2", "swedencentral", "westus2"]
+# Default Azure region for Microsoft Foundry
+DEFAULT_REGION = "eastus2"
 
 # Project root directory
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -175,11 +177,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     if not check_azure_auth():
         return 1
 
-    if args.region not in SUPPORTED_REGIONS:
-        print(f"Error: Region '{args.region}' not supported.")
-        print(f"Supported regions: {', '.join(SUPPORTED_REGIONS)}")
-        return 1
-
+    region = DEFAULT_REGION
     subscription = args.subscription or get_subscription_id()
     if not subscription:
         print("Error: Could not determine Azure subscription.")
@@ -189,7 +187,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     print(f"PREPARING {args.count} ENVIRONMENT(S)")
     print(f"{'=' * 60}")
     print(f"  Prefix:       {args.prefix}")
-    print(f"  Region:       {args.region}")
+    print(f"  Region:       {region}")
     print(f"  Subscription: {subscription[:8]}...")
     print(f"{'=' * 60}\n")
 
@@ -208,25 +206,24 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         status = {
             "env_name": env_name,
             "resource_group": resource_group,
-            "region": args.region,
+            "region": region,
             "subscription": subscription,
             "status": "prepared",
             "created_at": datetime.now().isoformat(),
         }
 
         # Create resource group
-        if not args.skip_rg:
-            print(f"  Creating resource group: {resource_group}")
-            if not create_resource_group(resource_group, args.region):
-                status["status"] = "failed"
-                status["error"] = "Failed to create resource group"
-                save_env_status(env_name, status)
-                summary["environments"][env_name] = status
-                save_summary(summary)
-                continue
+        print(f"  Creating resource group: {resource_group}")
+        if not create_resource_group(resource_group, region):
+            status["status"] = "failed"
+            status["error"] = "Failed to create resource group"
+            save_env_status(env_name, status)
+            summary["environments"][env_name] = status
+            save_summary(summary)
+            continue
 
         # Purge any soft-deleted Cognitive Services
-        purge_soft_deleted_cognitive_services(resource_group, args.region)
+        purge_soft_deleted_cognitive_services(resource_group, region)
 
         # Create azd environment (or use existing)
         print(f"  Creating azd environment: {env_name}")
@@ -255,7 +252,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         # Set environment variables
         print(f"  Setting azd environment variables")
         env_vars = [
-            ("AZURE_LOCATION", args.region),
+            ("AZURE_LOCATION", region),
             ("AZURE_RESOURCE_GROUP", resource_group),
             ("AZURE_SUBSCRIPTION_ID", subscription),
         ]
@@ -497,8 +494,130 @@ def cmd_destroy(args: argparse.Namespace) -> int:
     return 0
 
 
+def parse_env_file(env_file: Path) -> dict:
+    """Parse a .env file and return as dict merged with current environment."""
+    env_vars = os.environ.copy()
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            # Remove quotes if present
+            value = value.strip().strip('"').strip("'")
+            env_vars[key.strip()] = value
+    return env_vars
+
+
+def run_single_test(
+    env_name: str, env_file: Path, solution: str, log_dir: Path
+) -> tuple[str, bool, float, str, list[str]]:
+    """
+    Run test for a single environment.
+
+    Returns: (env_name, success, duration_seconds, output, solutions_run)
+    """
+    env_vars = parse_env_file(env_file)
+    # Set TOKEN_USAGE_ENV so each process writes to its own file
+    env_vars["TOKEN_USAGE_ENV"] = env_name
+    start_time = time.time()
+
+    # Create log file for this environment
+    log_file = log_dir / f"{env_name}.log"
+
+    with open(log_file, "w") as f:
+        f.write(f"=== {env_name} started at {datetime.now().isoformat()} ===\n")
+        f.write(f"Solution: {solution}\n")
+        f.write(f"{'=' * 60}\n\n")
+        f.flush()
+
+        # Use PYTHONUNBUFFERED to get real-time output
+        env_vars["PYTHONUNBUFFERED"] = "1"
+
+        result = subprocess.run(
+            ["uv", "run", "python", "new-workshops/main.py", solution],
+            cwd=PROJECT_ROOT,
+            env=env_vars,
+            stdout=f,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+
+    duration = time.time() - start_time
+
+    # Read the log file for output
+    output = log_file.read_text()
+
+    # Append completion status
+    with open(log_file, "a") as f:
+        f.write(f"\n{'=' * 60}\n")
+        status = "SUCCESS" if result.returncode == 0 else "FAILED"
+        f.write(f"=== {env_name} {status} in {duration:.1f}s ===\n")
+
+    # Extract which solutions were run from output
+    solutions_run = []
+    for line in output.splitlines():
+        if line.startswith(">>> Running:"):
+            sol_name = line.replace(">>> Running:", "").strip()
+            solutions_run.append(sol_name)
+
+    return (env_name, result.returncode == 0, duration, output, solutions_run)
+
+
+def merge_token_usage_files() -> None:
+    """Merge per-environment token usage files into the main token_usage.json."""
+    token_usage_dir = PROJECT_ROOT / "new-workshops" / "solutions" / "token_usage"
+    token_usage_file = PROJECT_ROOT / "new-workshops" / "solutions" / "token_usage.json"
+
+    if not token_usage_dir.exists():
+        return
+
+    # Load existing main file or create empty structure
+    if token_usage_file.exists():
+        try:
+            merged = json.loads(token_usage_file.read_text())
+        except (json.JSONDecodeError, OSError):
+            merged = {"sessions": [], "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0}}
+    else:
+        merged = {"sessions": [], "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0}}
+
+    # Merge each environment file
+    env_files = list(token_usage_dir.glob("*.json"))
+    if not env_files:
+        return
+
+    print(f"\nMerging token usage from {len(env_files)} environment(s)...")
+
+    for env_file in env_files:
+        try:
+            env_data = json.loads(env_file.read_text())
+            # Add environment name to each session
+            env_name = env_file.stem
+            for session in env_data.get("sessions", []):
+                session["environment"] = env_name
+                merged["sessions"].append(session)
+            # Add totals
+            env_totals = env_data.get("totals", {})
+            merged["totals"]["llm_input"] += env_totals.get("llm_input", 0)
+            merged["totals"]["llm_output"] += env_totals.get("llm_output", 0)
+            merged["totals"]["embedding"] += env_totals.get("embedding", 0)
+            # Remove the per-environment file after merging
+            env_file.unlink()
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"  Warning: Could not merge {env_file.name}: {e}")
+
+    # Save merged file
+    token_usage_file.write_text(json.dumps(merged, indent=2))
+
+    # Remove directory if empty
+    try:
+        token_usage_dir.rmdir()
+    except OSError:
+        pass  # Directory not empty, that's fine
+
+    print(f"  Merged into: {token_usage_file}")
+
+
 def cmd_test(args: argparse.Namespace) -> int:
-    """Run tests on deployed environments."""
+    """Run tests on deployed environments (parallel by default)."""
     summary = load_summary()
 
     if args.env:
@@ -520,52 +639,127 @@ def cmd_test(args: argparse.Namespace) -> int:
         print("Run 'generate-env --all' after deployments complete.")
         return 0
 
-    print(f"\n{'=' * 60}")
-    print(f"RUNNING TESTS ON {len(targets)} ENVIRONMENT(S)")
-    print(f"{'=' * 60}")
-
     solution = args.solution or "12"  # Default to batch run
-    main_env_file = PROJECT_ROOT / ".env"
-    main_env_backup = PROJECT_ROOT / ".env.backup"
+    max_workers = args.parallel if args.parallel else len(targets)
 
+    # Filter to only environments with .env files
+    test_jobs = []
     for env_name in targets:
-        env_dir = DEPLOYMENTS_DIR / env_name
-        env_file = env_dir / ".env"
+        env_file = DEPLOYMENTS_DIR / env_name / ".env"
+        if env_file.exists():
+            test_jobs.append((env_name, env_file))
+        else:
+            print(f"[{env_name}] Skipping - no .env file found")
 
-        if not env_file.exists():
-            print(f"\n[{env_name}] Skipping - no .env file found")
-            continue
+    if not test_jobs:
+        print("No environments with .env files to test.")
+        return 0
 
-        print(f"\n[{env_name}] Running solution {solution}...")
+    parallel_str = "parallel" if len(test_jobs) > 1 else "sequential"
+    print(f"\n{'=' * 60}")
+    print(f"RUNNING TESTS ON {len(test_jobs)} ENVIRONMENT(S) ({parallel_str})")
+    print(f"{'=' * 60}")
+    print(f"Solution: {solution} | Max parallel: {max_workers}")
+    print(f"{'=' * 60}\n")
 
-        # Backup main .env and swap with environment's .env
-        if main_env_file.exists():
-            shutil.copy(main_env_file, main_env_backup)
+    # Create log directory
+    log_dir = DEPLOYMENTS_DIR / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
 
-        shutil.copy(env_file, main_env_file)
+    # Clean old logs
+    for old_log in log_dir.glob("*.log"):
+        old_log.unlink()
 
-        try:
-            result = run_command(
-                ["uv", "run", "python", "new-workshops/main.py", solution],
-                cwd=PROJECT_ROOT,
-            )
+    print(f"Logs: {log_dir}/")
+    print(f"  Monitor progress: tail -f {log_dir}/*.log")
+    print(f"  Or watch one:     tail -f {log_dir}/workshop-01.log\n")
 
-            if result.returncode == 0:
-                print(f"[{env_name}] ✓ Tests completed successfully")
-            else:
-                print(f"[{env_name}] ✗ Tests failed")
-        finally:
-            # Restore original .env
-            if main_env_backup.exists():
-                shutil.copy(main_env_backup, main_env_file)
-                main_env_backup.unlink()
+    results: list[tuple[str, bool, float, str, list[str]]] = []
+    start_time = time.time()
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(run_single_test, env_name, env_file, solution, log_dir): env_name
+            for env_name, env_file in test_jobs
+        }
+
+        # Track which environments are still running
+        running = set(env_name for env_name, _ in test_jobs)
+        completed = 0
+
+        for future in as_completed(futures):
+            completed += 1
+            env_name = futures[future]
+            running.discard(env_name)
+            try:
+                result = future.result()
+                results.append(result)
+                status = "✓" if result[1] else "✗"
+                color = "\033[92m" if result[1] else "\033[91m"
+                reset = "\033[0m"
+                solutions_str = f" [{len(result[4])} solutions]" if result[4] else ""
+                elapsed = time.time() - start_time
+                print(f"  {color}{status}{reset} [{completed}/{len(test_jobs)}] {env_name} ({result[2]:.1f}s){solutions_str} [elapsed: {elapsed:.0f}s]")
+                if running and len(running) <= 5:
+                    print(f"      Still running: {', '.join(sorted(running))}")
+            except Exception as e:
+                results.append((env_name, False, 0.0, str(e), []))
+                print(f"  \033[91m✗\033[0m [{completed}/{len(test_jobs)}] {env_name} error: {e}")
+
+    total_time = time.time() - start_time
+
+    # Sort results by environment name for consistent display
+    results.sort(key=lambda x: x[0])
+
+    # Summary
+    passed = sum(1 for r in results if r[1])
+    failed = len(results) - passed
 
     print(f"\n{'=' * 60}")
-    print(f"TESTING COMPLETE")
+    print(f"RESULTS")
     print(f"{'=' * 60}")
-    print(f"\nRun token report: uv run python new-workshops/solutions/token_report.py")
 
-    return 0
+    for env_name, success, duration, output, solutions_run in results:
+        status = "✓" if success else "✗"
+        color = "\033[92m" if success else "\033[91m"
+        reset = "\033[0m"
+        solutions_count = f"[{len(solutions_run)} solutions]" if solutions_run else ""
+        print(f"  {color}{status}{reset} {env_name:<20} ({duration:.1f}s) {solutions_count}")
+
+    # Show which solutions were run (from first successful result)
+    all_solutions = set()
+    for r in results:
+        all_solutions.update(r[4])
+    if all_solutions:
+        print(f"\nSolutions tested: {', '.join(sorted(all_solutions))}")
+
+    print(f"\n{'-' * 60}")
+    print(f"PASSED: {passed} | FAILED: {failed} | Total time: {total_time:.1f}s")
+
+    # Show failure details
+    failures = [r for r in results if not r[1]]
+    if failures:
+        for env_name, _, _, output, solutions_run in failures:
+            print(f"\n{'=' * 60}")
+            print(f"FAILURE DETAILS: {env_name}")
+            if solutions_run:
+                print(f"Solutions completed before failure: {', '.join(solutions_run)}")
+            print(f"{'=' * 60}")
+            # Show last 30 lines of output
+            lines = output.strip().split("\n")
+            if len(lines) > 30:
+                print("... (truncated)")
+                lines = lines[-30:]
+            for line in lines:
+                print(f"  {line}")
+
+    # Merge per-environment token usage files
+    merge_token_usage_files()
+
+    print(f"\n{'=' * 60}")
+    print(f"Run token report: uv run python new-workshops/solutions/token_report.py")
+
+    return 0 if failed == 0 else 1
 
 
 def main():
@@ -609,16 +803,8 @@ Examples:
         help="Prefix for environment names (default: workshop)",
     )
     prepare_parser.add_argument(
-        "--region", "-r", type=str, default="eastus2",
-        help=f"Azure region (default: eastus2). Supported: {', '.join(SUPPORTED_REGIONS)}",
-    )
-    prepare_parser.add_argument(
         "--subscription", "-s", type=str,
         help="Azure subscription ID (default: current subscription)",
-    )
-    prepare_parser.add_argument(
-        "--skip-rg", action="store_true",
-        help="Skip resource group creation (use existing)",
     )
 
     # Generate-env command
@@ -663,6 +849,10 @@ Examples:
     test_parser.add_argument(
         "--solution", type=str,
         help="Solution number to run (default: 12 for batch)",
+    )
+    test_parser.add_argument(
+        "--parallel", "-p", type=int, default=None,
+        help="Max parallel tests (default: all at once)",
     )
 
     args = parser.parse_args()

@@ -1,0 +1,412 @@
+{
+  "sessions": [
+    {
+      "timestamp": "2025-12-01T21:52:47.448588",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T21:52:47.957662",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T21:52:49.952879",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 60,
+      "duration_ms": 1780.742833041586
+    },
+    {
+      "timestamp": "2025-12-01T21:52:50.109785",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T21:53:50.920025",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 76,
+      "duration_ms": 60541.63599992171
+    },
+    {
+      "timestamp": "2025-12-01T21:53:53.162828",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T21:58:43.244316",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T21:58:43.740290",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T21:58:45.317069",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 62,
+      "duration_ms": 1398.1717909919098
+    },
+    {
+      "timestamp": "2025-12-01T21:58:45.456655",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T21:59:47.304860",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 218,
+      "duration_ms": 61702.038959017955
+    },
+    {
+      "timestamp": "2025-12-01T21:59:49.947920",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T22:06:28.759038",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:06:29.276403",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:06:31.092910",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 92,
+      "duration_ms": 1591.8729580007493
+    },
+    {
+      "timestamp": "2025-12-01T22:06:31.244470",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T22:07:32.887580",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 141,
+      "duration_ms": 61430.653125047684
+    },
+    {
+      "timestamp": "2025-12-01T22:07:35.329553",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T22:13:45.841304",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 660,
+      "output_tokens": 32,
+      "duration_ms": 1055.59220793657
+    },
+    {
+      "timestamp": "2025-12-01T22:13:46.562920",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 657,
+      "output_tokens": 11,
+      "duration_ms": 558.3943749079481
+    },
+    {
+      "timestamp": "2025-12-01T22:13:47.904696",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 222,
+      "output_tokens": 136,
+      "duration_ms": 1240.4129169881344
+    },
+    {
+      "timestamp": "2025-12-01T22:13:48.634221",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 662,
+      "output_tokens": 28,
+      "duration_ms": 727.4470829870552
+    },
+    {
+      "timestamp": "2025-12-01T22:14:00.892562",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:14:01.240499",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:14:03.184216",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 61,
+      "duration_ms": 1808.2096660509706
+    },
+    {
+      "timestamp": "2025-12-01T22:14:03.320308",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T22:15:04.831185",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 205,
+      "duration_ms": 61367.00050008949
+    },
+    {
+      "timestamp": "2025-12-01T22:15:06.780175",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T22:20:10.395530",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:20:10.810604",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:20:12.270595",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 64,
+      "duration_ms": 1325.529458001256
+    },
+    {
+      "timestamp": "2025-12-01T22:20:12.444302",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T22:21:14.312738",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 168,
+      "duration_ms": 61693.61825007945
+    },
+    {
+      "timestamp": "2025-12-01T22:21:16.582394",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T22:25:05.851996",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:25:06.341134",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:25:08.088918",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 56,
+      "duration_ms": 1536.363665945828
+    },
+    {
+      "timestamp": "2025-12-01T22:25:08.224354",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T22:26:09.717695",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 74,
+      "duration_ms": 61342.946041957475
+    },
+    {
+      "timestamp": "2025-12-01T22:26:11.602986",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T22:32:28.851722",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:32:29.328423",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T22:32:30.589909",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 50,
+      "duration_ms": 1054.1094159707427
+    },
+    {
+      "timestamp": "2025-12-01T22:32:30.741429",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T22:33:32.979904",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 144,
+      "duration_ms": 62058.01941698883
+    },
+    {
+      "timestamp": "2025-12-01T22:33:35.066215",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T22:34:34.022259",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4808,
+      "output_tokens": 212,
+      "duration_ms": 58651.76195895765
+    },
+    {
+      "timestamp": "2025-12-01T22:34:34.680034",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 11
+    }
+  ],
+  "totals": {
+    "llm_input": 63002,
+    "llm_output": 1890,
+    "embedding": 235
+  }
+}
