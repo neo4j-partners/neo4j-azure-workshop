@@ -22,12 +22,21 @@ TOKEN_USAGE_FILE = Path(__file__).parent / "token_usage.json"
 
 def load_usage() -> dict:
     """Load token usage data from JSON file."""
+    default = {
+        "sessions": [],
+        "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0},
+        "failures": [],
+    }
     if not TOKEN_USAGE_FILE.exists():
-        return {"sessions": [], "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0}}
+        return default
     try:
-        return json.loads(TOKEN_USAGE_FILE.read_text())
+        data = json.loads(TOKEN_USAGE_FILE.read_text())
+        # Ensure failures key exists for older data files
+        if "failures" not in data:
+            data["failures"] = []
+        return data
     except (json.JSONDecodeError, OSError):
-        return {"sessions": [], "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0}}
+        return default
 
 
 def reset_usage() -> None:
@@ -35,6 +44,7 @@ def reset_usage() -> None:
     TOKEN_USAGE_FILE.write_text(json.dumps({
         "sessions": [],
         "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0},
+        "failures": [],
     }, indent=2))
     print("Token usage has been reset.")
 
@@ -85,6 +95,65 @@ def generate_report(data: dict) -> str:
     lines.append(f"  Embedding Tokens:     {format_number(embedding):>12}")
     lines.append(f"  {'─' * 28}")
     lines.append(f"  TOTAL TOKENS:         {format_number(total):>12}")
+
+    # Failures section
+    failures = data.get("failures", [])
+    if failures:
+        lines.append("")
+        lines.append("FAILURES")
+        lines.append("-" * 40)
+
+        # Count by error type
+        rate_limit_count = sum(1 for f in failures if f.get("error_type") == "rate_limit")
+        other_count = len(failures) - rate_limit_count
+
+        lines.append(f"  Rate limit errors:    {rate_limit_count:>12}")
+        lines.append(f"  Other errors:         {other_count:>12}")
+        lines.append(f"  {'─' * 28}")
+        lines.append(f"  TOTAL FAILURES:       {len(failures):>12}")
+
+        # Failures by script
+        failure_by_script = defaultdict(lambda: {"rate_limit": 0, "other": 0})
+        for f in failures:
+            script = f.get("script", "unknown")
+            if f.get("error_type") == "rate_limit":
+                failure_by_script[script]["rate_limit"] += 1
+            else:
+                failure_by_script[script]["other"] += 1
+
+        lines.append("")
+        lines.append("FAILURES BY SCRIPT")
+        lines.append("-" * 70)
+        lines.append(f"{'Script':<40} {'Rate Limit':>12} {'Other':>12}")
+        lines.append("-" * 70)
+
+        for script in sorted(failure_by_script.keys()):
+            counts = failure_by_script[script]
+            lines.append(
+                f"{script:<40} "
+                f"{counts['rate_limit']:>12} "
+                f"{counts['other']:>12}"
+            )
+
+        # Recent failures (last 5)
+        lines.append("")
+        lines.append("RECENT FAILURES (last 5)")
+        lines.append("-" * 70)
+
+        recent_failures = failures[-5:] if len(failures) > 5 else failures
+        for f in reversed(recent_failures):
+            timestamp = f.get("timestamp", "")
+            if timestamp:
+                try:
+                    dt = datetime.fromisoformat(timestamp)
+                    timestamp = dt.strftime("%H:%M:%S")
+                except ValueError:
+                    pass
+            script = f.get("script", "unknown")[:25]
+            error_type = f.get("error_type", "error")
+            env = f.get("environment", "")
+            env_str = f" ({env})" if env else ""
+            lines.append(f"  {timestamp}  {error_type:<12} {script}{env_str}")
 
     if not sessions:
         lines.append("")

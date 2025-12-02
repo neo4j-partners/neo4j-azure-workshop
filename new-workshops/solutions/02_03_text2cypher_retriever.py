@@ -13,6 +13,24 @@ from neo4j_graphrag.schema import get_schema
 
 from config import get_tracked_llm, get_neo4j_driver
 
+# Custom prompt for Cypher generation with LIMIT
+CYPHER_PROMPT = """Task: Generate a Cypher statement to query a graph database.
+Instructions:
+Use only the provided relationship types and properties in the schema.
+Do not use any other relationship types or properties that are not provided.
+
+Always include a LIMIT clause at the end of your query to limit results to 20 rows maximum.
+
+Schema:
+{schema}
+
+Note: Do not include any explanations or apologies in your responses.
+Do not respond to any questions that might ask anything else than for you to construct a Cypher statement.
+Do not include any text except the generated Cypher statement.
+
+The question is:
+{query_text}"""
+
 
 def create_text2cypher_retriever(driver, llm) -> Text2CypherRetriever:
     """Create a Text2CypherRetriever."""
@@ -25,6 +43,7 @@ def create_text2cypher_retriever(driver, llm) -> Text2CypherRetriever:
         driver=driver,
         llm=llm,
         neo4j_schema=schema,
+        custom_prompt=CYPHER_PROMPT,
     )
 
 
@@ -49,7 +68,7 @@ def demo_rag_search(llm, retriever: Text2CypherRetriever, query: str) -> None:
     print(f"Query: {query}\n")
 
     rag = GraphRAG(llm=llm, retriever=retriever)
-    response = rag.search(query, return_context=True)
+    response = rag.search(query, retriever_config={"top_k": 5}, return_context=True)
 
     print(f"Answer: {response.answer}")
     print(f"\nGenerated Cypher: {response.retriever_result.metadata['cypher']}")
@@ -59,16 +78,20 @@ def main():
     """Run text2cypher retriever demos."""
     with get_neo4j_driver() as driver:
         llm = get_tracked_llm("02_03_text2cypher_retriever")
-        retriever = create_text2cypher_retriever(driver, llm)
+        try:
+            retriever = create_text2cypher_retriever(driver, llm)
 
-        # Demo 1: Direct Cypher generation
-        demo_cypher_generation(retriever, "What companies are owned by BlackRock Inc.")
+            # Demo 1: Direct Cypher generation
+            demo_cypher_generation(retriever, "What companies are owned by BlackRock Inc.")
 
-        # Demo 2: RAG search
-        demo_rag_search(llm, retriever, "Who are the asset managers?")
+            # Demo 2: RAG search
+            demo_rag_search(llm, retriever, "Who are the asset managers?")
 
-        # Demo 3: Another RAG example
-        demo_rag_search(llm, retriever, "Summarise the products mentioned in the company filings.")
+            # Demo 3: Another RAG example
+            demo_rag_search(llm, retriever, "Summarise the products mentioned in the company filings.")
+        finally:
+            # Close the LLM client to prevent "Event loop is closed" errors
+            llm.close()
 
 
 if __name__ == "__main__":

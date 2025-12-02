@@ -28,7 +28,7 @@ def demo_vector_search(retriever: VectorRetriever, query: str) -> None:
     print(f"\n--- Direct Vector Search ---")
     print(f"Query: {query}\n")
 
-    results = retriever.search(query_text=query, top_k=10)
+    results = retriever.search(query_text=query, top_k=5)
     for item in results.items:
         score = item.metadata.get("score", 0)
         content = item.content[:200] + "..." if item.content and len(item.content) > 200 else (item.content or "")
@@ -41,7 +41,7 @@ def demo_rag_search(llm, retriever: VectorRetriever, query: str) -> None:
     print(f"Query: {query}\n")
 
     rag = GraphRAG(llm=llm, retriever=retriever)
-    response = rag.search(query)
+    response = rag.search(query, retriever_config={"top_k": 5})
     print(f"Answer: {response.answer}")
 
 
@@ -50,16 +50,21 @@ def main():
     with get_neo4j_driver() as driver:
         embedder = get_tracked_embedder("02_01_vector_retriever")
         llm = get_tracked_llm("02_01_vector_retriever")
-        retriever = create_vector_retriever(driver, embedder)
+        try:
+            retriever = create_vector_retriever(driver, embedder)
 
-        # Demo 1: Direct vector search
-        demo_vector_search(retriever, "What are the risks that Apple faces?")
+            # Demo 1: Direct vector search
+            demo_vector_search(retriever, "What are the risks that Apple faces?")
 
-        # Demo 2: RAG search with LLM
-        demo_rag_search(llm, retriever, "What companies mention AI in their filings?")
+            # Demo 2: RAG search with LLM
+            demo_rag_search(llm, retriever, "What companies mention AI in their filings?")
 
-        # Demo 3: Another RAG example
-        demo_rag_search(llm, retriever, "What products does Microsoft reference?")
+            # Demo 3: Another RAG example
+            demo_rag_search(llm, retriever, "What products does Microsoft reference?")
+        finally:
+            # Close clients to prevent "Event loop is closed" errors
+            llm.close()
+            embedder.close()
 
 
 if __name__ == "__main__":

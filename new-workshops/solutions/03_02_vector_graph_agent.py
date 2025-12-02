@@ -50,7 +50,11 @@ ORDER BY score DESC
 
 
 def create_tools(driver):
-    """Create tools with the given driver."""
+    """Create tools with the given driver.
+
+    Returns:
+        tuple: (list of tools, list of clients to close)
+    """
     embedder = get_tracked_embedder("03_02_vector_graph_agent")
 
     vector_retriever = VectorCypherRetriever(
@@ -73,7 +77,7 @@ def create_tools(driver):
             return "No documents found matching the query."
         return "\n\n".join(item.content for item in results.items)
 
-    return [get_graph_schema, retrieve_financial_documents]
+    return [get_graph_schema, retrieve_financial_documents], [embedder]
 
 
 async def run_agent(query: str):
@@ -81,32 +85,36 @@ async def run_agent(query: str):
     config = get_agent_config()
 
     with get_neo4j_driver() as driver:
-        tools = create_tools(driver)
+        tools, clients_to_close = create_tools(driver)
+        try:
+            async with AzureCliCredential() as credential:
+                client = AzureAIClient(
+                    project_endpoint=config.project_endpoint,
+                    model_deployment_name=config.model_name,
+                    async_credential=credential,
+                )
 
-        async with AzureCliCredential() as credential:
-            client = AzureAIClient(
-                project_endpoint=config.project_endpoint,
-                model_deployment_name=config.model_name,
-                async_credential=credential,
-            )
+                async with client.create_agent(
+                    name="workshop-vector-graph-agent",
+                    instructions=(
+                        "You are a helpful assistant that can answer questions about "
+                        "a graph database containing financial documents. You can retrieve "
+                        "the schema and search for relevant documents."
+                    ),
+                    tools=tools,
+                ) as agent:
+                    print(f"User: {query}\n")
+                    print("Assistant: ", end="", flush=True)
 
-            async with client.create_agent(
-                name="workshop-vector-graph-agent",
-                instructions=(
-                    "You are a helpful assistant that can answer questions about "
-                    "a graph database containing financial documents. You can retrieve "
-                    "the schema and search for relevant documents."
-                ),
-                tools=tools,
-            ) as agent:
-                print(f"User: {query}\n")
-                print("Assistant: ", end="", flush=True)
+                    async for update in agent.run_stream(query):
+                        if update.text:
+                            print(update.text, end="", flush=True)
 
-                async for update in agent.run_stream(query):
-                    if update.text:
-                        print(update.text, end="", flush=True)
-
-                print("\n")
+                    print("\n")
+        finally:
+            # Close clients to prevent "Event loop is closed" errors
+            for c in clients_to_close:
+                c.close()
 
 
 if __name__ == "__main__":

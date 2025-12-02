@@ -43,6 +43,8 @@ Do not use any other relationship types or properties that are not provided.
 
 Use `WHERE toLower(node.name) CONTAINS toLower('name')` to filter nodes by name.
 
+Always include a LIMIT clause at the end of your query to limit results to 20 rows maximum.
+
 Schema:
 {schema}
 
@@ -55,7 +57,11 @@ The question is:
 
 
 def create_tools(driver):
-    """Create tools with the given driver."""
+    """Create tools with the given driver.
+
+    Returns:
+        tuple: (list of tools, list of clients to close)
+    """
     config = get_agent_config()
     embedder = get_tracked_embedder("03_03_text2cypher_agent")
 
@@ -105,7 +111,8 @@ def create_tools(driver):
             return "No results found for the query."
         return "\n\n".join(item.content for item in results.items)
 
-    return [get_graph_schema, retrieve_financial_documents, query_database]
+    # Return tools and clients that need to be closed
+    return [get_graph_schema, retrieve_financial_documents, query_database], [embedder, cypher_llm]
 
 
 async def run_agent(query: str):
@@ -113,35 +120,39 @@ async def run_agent(query: str):
     config = get_agent_config()
 
     with get_neo4j_driver() as driver:
-        tools = create_tools(driver)
+        tools, clients_to_close = create_tools(driver)
+        try:
+            async with AzureCliCredential() as credential:
+                client = AzureAIClient(
+                    project_endpoint=config.project_endpoint,
+                    model_deployment_name=config.model_name,
+                    async_credential=credential,
+                )
 
-        async with AzureCliCredential() as credential:
-            client = AzureAIClient(
-                project_endpoint=config.project_endpoint,
-                model_deployment_name=config.model_name,
-                async_credential=credential,
-            )
+                async with client.create_agent(
+                    name="workshop-multi-tool-agent",
+                    instructions=(
+                        "You are a helpful assistant that can answer questions about "
+                        "a graph database containing financial documents. You have three tools:\n"
+                        "1. get_graph_schema - Get the database schema\n"
+                        "2. retrieve_financial_documents - Search documents semantically\n"
+                        "3. query_database - Query specific facts from the database\n\n"
+                        "Choose the appropriate tool based on the question type."
+                    ),
+                    tools=tools,
+                ) as agent:
+                    print(f"User: {query}\n")
+                    print("Assistant: ", end="", flush=True)
 
-            async with client.create_agent(
-                name="workshop-multi-tool-agent",
-                instructions=(
-                    "You are a helpful assistant that can answer questions about "
-                    "a graph database containing financial documents. You have three tools:\n"
-                    "1. get_graph_schema - Get the database schema\n"
-                    "2. retrieve_financial_documents - Search documents semantically\n"
-                    "3. query_database - Query specific facts from the database\n\n"
-                    "Choose the appropriate tool based on the question type."
-                ),
-                tools=tools,
-            ) as agent:
-                print(f"User: {query}\n")
-                print("Assistant: ", end="", flush=True)
+                    async for update in agent.run_stream(query):
+                        if update.text:
+                            print(update.text, end="", flush=True)
 
-                async for update in agent.run_stream(query):
-                    if update.text:
-                        print(update.text, end="", flush=True)
-
-                print("\n")
+                    print("\n")
+        finally:
+            # Close clients to prevent "Event loop is closed" errors
+            for client in clients_to_close:
+                client.close()
 
 
 if __name__ == "__main__":

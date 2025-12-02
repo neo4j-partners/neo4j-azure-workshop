@@ -178,7 +178,7 @@ uv run python scripts/scale_deploy.py destroy --env workshop-03
 
 ### Quota Strategy
 
-- **TPM is shared** - 10 environments with 5K TPM each = 50K TPM total from quota
+- **TPM is shared** - 10 environments with 20K TPM each = 200K TPM total from quota
 - **Request quota increase** before large-scale testing
 - **Use different regions** to distribute load (eastus2, swedencentral, westus2)
 
@@ -195,10 +195,10 @@ deployments:
   # Per-environment overrides
   environments:
     - name: workshop-01
-      tpm_chat: 10
+      tpm_chat: 20
       tpm_embedding: 10
     - name: workshop-02
-      tpm_chat: 5
+      tpm_chat: 20
       tpm_embedding: 5
 
   # Batching

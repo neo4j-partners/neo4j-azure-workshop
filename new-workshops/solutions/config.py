@@ -195,7 +195,11 @@ class TokenCounter:
                 return json.loads(self.output_file.read_text())
             except (json.JSONDecodeError, OSError):
                 pass
-        return {"sessions": [], "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0}}
+        return {
+            "sessions": [],
+            "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0},
+            "failures": [],
+        }
 
     def _save_usage(self, data: dict) -> None:
         """Save usage data to JSON."""
@@ -260,6 +264,34 @@ class TokenCounter:
 
         return entry
 
+    def record_failure(
+        self,
+        script: str,
+        call_type: str,
+        error_type: str,
+        error_message: str,
+        model: str | None = None,
+    ) -> dict:
+        """Record a failed API call."""
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": call_type,
+            "script": script,
+            "error_type": error_type,
+            "error_message": error_message[:500],  # Truncate long messages
+        }
+        if model:
+            entry["model"] = model
+
+        with self._lock:
+            data = self._load_usage()
+            if "failures" not in data:
+                data["failures"] = []
+            data["failures"].append(entry)
+            self._save_usage(data)
+
+        return entry
+
     def get_totals(self) -> dict:
         """Get current token totals."""
         with self._lock:
@@ -272,6 +304,7 @@ class TokenCounter:
             self._save_usage({
                 "sessions": [],
                 "totals": {"llm_input": 0, "llm_output": 0, "embedding": 0},
+                "failures": [],
             })
 
 
@@ -290,6 +323,20 @@ class TrackedLLM(OpenAILLM):
         super().__init__(*args, **kwargs)
         self._script_name = script_name
 
+    def close(self) -> None:
+        """Close the underlying OpenAI client to prevent event loop errors."""
+        if hasattr(self, "client") and self.client is not None:
+            self.client.close()
+
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - closes the client."""
+        self.close()
+        return False
+
     def invoke(
         self,
         input: str,
@@ -298,11 +345,24 @@ class TrackedLLM(OpenAILLM):
     ) -> LLMResponse:
         """Invoke LLM and track tokens and timing."""
         start_time = time.perf_counter()
-        response = super().invoke(
-            input,
-            message_history=message_history,
-            system_instruction=system_instruction,
-        )
+        try:
+            response = super().invoke(
+                input,
+                message_history=message_history,
+                system_instruction=system_instruction,
+            )
+        except Exception as e:
+            # Record the failure
+            error_type = "rate_limit" if "429" in str(e) or "rate" in str(e).lower() else "error"
+            token_counter.record_failure(
+                script=self._script_name,
+                call_type="llm",
+                error_type=error_type,
+                error_message=str(e),
+                model=self.model_name,
+            )
+            raise
+
         duration_ms = (time.perf_counter() - start_time) * 1000
 
         # Include system_instruction in token count if provided
@@ -326,11 +386,24 @@ class TrackedLLM(OpenAILLM):
     ) -> LLMResponse:
         """Async invoke LLM and track tokens and timing."""
         start_time = time.perf_counter()
-        response = await super().ainvoke(
-            input,
-            message_history=message_history,
-            system_instruction=system_instruction,
-        )
+        try:
+            response = await super().ainvoke(
+                input,
+                message_history=message_history,
+                system_instruction=system_instruction,
+            )
+        except Exception as e:
+            # Record the failure
+            error_type = "rate_limit" if "429" in str(e) or "rate" in str(e).lower() else "error"
+            token_counter.record_failure(
+                script=self._script_name,
+                call_type="llm",
+                error_type=error_type,
+                error_message=str(e),
+                model=self.model_name,
+            )
+            raise
+
         duration_ms = (time.perf_counter() - start_time) * 1000
 
         # Include system_instruction in token count if provided
@@ -358,9 +431,36 @@ class TrackedEmbeddings(OpenAIEmbeddings):
         super().__init__(*args, **kwargs)
         self._script_name = script_name
 
+    def close(self) -> None:
+        """Close the underlying OpenAI client to prevent event loop errors."""
+        if hasattr(self, "client") and self.client is not None:
+            self.client.close()
+
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - closes the client."""
+        self.close()
+        return False
+
     def embed_query(self, text: str) -> list[float]:
         """Embed a single query and track tokens."""
-        result = super().embed_query(text)
+        try:
+            result = super().embed_query(text)
+        except Exception as e:
+            # Record the failure
+            error_type = "rate_limit" if "429" in str(e) or "rate" in str(e).lower() else "error"
+            token_counter.record_failure(
+                script=self._script_name,
+                call_type="embedding",
+                error_type=error_type,
+                error_message=str(e),
+                model=self.model,
+            )
+            raise
+
         token_counter.record_embedding_call(
             script=self._script_name,
             texts=[text],

@@ -4,7 +4,7 @@
   "region": "eastus2",
   "subscription": "47fd4ce5-a912-480e-bb81-95fbd59bb6c5",
   "status": "deployed",
-  "created_at": "2025-12-01T21:28:03.986839",
-  "updated_at": "2025-12-01T21:52:22.495549",
+  "created_at": "2025-12-01T22:49:04.760245",
+  "updated_at": "2025-12-01T22:59:00.547959",
   "env_file": "/Users/ryanknight/projects/workshops/neo4j-azure-workshop/deployments/workshop-05/.env"
 }

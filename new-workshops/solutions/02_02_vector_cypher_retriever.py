@@ -68,33 +68,37 @@ def main():
     with get_neo4j_driver() as driver:
         embedder = get_tracked_embedder("02_02_vector_cypher_retriever")
         llm = get_tracked_llm("02_02_vector_cypher_retriever")
+        try:
+            # Demo 1: Company + Risk context
+            retriever = create_vector_cypher_retriever(driver, embedder, COMPANY_RISK_QUERY)
+            demo_retriever(
+                llm,
+                retriever,
+                "What are the top risk factors that Apple faces?",
+                "Company Risks",
+            )
 
-        # Demo 1: Company + Risk context
-        retriever = create_vector_cypher_retriever(driver, embedder, COMPANY_RISK_QUERY)
-        demo_retriever(
-            llm,
-            retriever,
-            "What are the top risk factors that Apple faces?",
-            "Company Risks",
-        )
+            # Demo 2: Asset Manager context
+            retriever = create_vector_cypher_retriever(driver, embedder, ASSET_MANAGER_QUERY)
+            demo_retriever(
+                llm,
+                retriever,
+                "Who are the asset managers most affected by banking regulations?",
+                "Asset Managers",
+            )
 
-        # Demo 2: Asset Manager context
-        retriever = create_vector_cypher_retriever(driver, embedder, ASSET_MANAGER_QUERY)
-        demo_retriever(
-            llm,
-            retriever,
-            "Who are the asset managers most affected by banking regulations?",
-            "Asset Managers",
-        )
-
-        # Demo 3: Shared Risks between companies
-        retriever = create_vector_cypher_retriever(driver, embedder, SHARED_RISKS_QUERY)
-        demo_retriever(
-            llm,
-            retriever,
-            "What risks connect major tech companies?",
-            "Shared Risks",
-        )
+            # Demo 3: Shared Risks between companies
+            retriever = create_vector_cypher_retriever(driver, embedder, SHARED_RISKS_QUERY)
+            demo_retriever(
+                llm,
+                retriever,
+                "What risks connect major tech companies?",
+                "Shared Risks",
+            )
+        finally:
+            # Close clients to prevent "Event loop is closed" errors
+            llm.close()
+            embedder.close()
 
 
 if __name__ == "__main__":

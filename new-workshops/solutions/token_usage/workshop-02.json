@@ -1,7 +1,7 @@
 {
   "sessions": [
     {
-      "timestamp": "2025-12-01T21:52:47.428498",
+      "timestamp": "2025-12-01T23:27:06.636935",
       "type": "embedding",
       "script": "02_01_vector_retriever",
       "model": "text-embedding-ada-002",
@@ -9,7 +9,7 @@
       "tokens": 8
     },
     {
-      "timestamp": "2025-12-01T21:52:48.049157",
+      "timestamp": "2025-12-01T23:27:06.901403",
       "type": "embedding",
       "script": "02_01_vector_retriever",
       "model": "text-embedding-ada-002",
@@ -17,16 +17,16 @@
       "tokens": 8
     },
     {
-      "timestamp": "2025-12-01T21:52:49.698503",
+      "timestamp": "2025-12-01T23:27:08.910692",
       "type": "llm",
       "script": "02_01_vector_retriever",
       "model": "gpt-4o-mini",
       "input_tokens": 4056,
       "output_tokens": 60,
-      "duration_ms": 1330.0895410357043
+      "duration_ms": 1901.5955000650138
     },
     {
-      "timestamp": "2025-12-01T21:52:49.840348",
+      "timestamp": "2025-12-01T23:27:09.082173",
       "type": "embedding",
       "script": "02_01_vector_retriever",
       "model": "text-embedding-ada-002",
@@ -34,24 +34,7 @@
       "tokens": 6
     },
     {
-      "timestamp": "2025-12-01T21:53:51.399679",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 3943,
-      "output_tokens": 172,
-      "duration_ms": 61350.72933405172
-    },
-    {
-      "timestamp": "2025-12-01T21:53:53.805503",
-      "type": "embedding",
-      "script": "02_02_vector_cypher_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 10
-    },
-    {
-      "timestamp": "2025-12-01T21:58:43.394774",
+      "timestamp": "2025-12-01T23:27:19.217139",
       "type": "embedding",
       "script": "02_01_vector_retriever",
       "model": "text-embedding-ada-002",
@@ -59,7 +42,7 @@
       "tokens": 8
     },
     {
-      "timestamp": "2025-12-01T21:58:43.925863",
+      "timestamp": "2025-12-01T23:27:19.513090",
       "type": "embedding",
       "script": "02_01_vector_retriever",
       "model": "text-embedding-ada-002",
@@ -67,16 +50,16 @@
       "tokens": 8
     },
     {
-      "timestamp": "2025-12-01T21:58:45.848163",
+      "timestamp": "2025-12-01T23:27:21.064943",
       "type": "llm",
       "script": "02_01_vector_retriever",
       "model": "gpt-4o-mini",
       "input_tokens": 4056,
-      "output_tokens": 64,
-      "duration_ms": 1679.879416944459
+      "output_tokens": 61,
+      "duration_ms": 1425.834915949963
     },
     {
-      "timestamp": "2025-12-01T21:58:45.979401",
+      "timestamp": "2025-12-01T23:27:21.200312",
       "type": "embedding",
       "script": "02_01_vector_retriever",
       "model": "text-embedding-ada-002",
@@ -84,16 +67,16 @@
       "tokens": 6
     },
     {
-      "timestamp": "2025-12-01T21:59:48.122554",
+      "timestamp": "2025-12-01T23:27:23.657819",
       "type": "llm",
       "script": "02_01_vector_retriever",
       "model": "gpt-4o-mini",
       "input_tokens": 3943,
-      "output_tokens": 172,
-      "duration_ms": 61995.302208000794
+      "output_tokens": 187,
+      "duration_ms": 2318.516292027198
     },
     {
-      "timestamp": "2025-12-01T21:59:50.330866",
+      "timestamp": "2025-12-01T23:27:25.232381",
       "type": "embedding",
       "script": "02_02_vector_cypher_retriever",
       "model": "text-embedding-ada-002",
@@ -101,312 +84,143 @@
       "tokens": 10
     },
     {
-      "timestamp": "2025-12-01T22:06:28.757518",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:06:29.281050",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:06:30.855879",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 4056,
-      "output_tokens": 67,
-      "duration_ms": 1397.0859160181135
-    },
-    {
-      "timestamp": "2025-12-01T22:06:30.993753",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 6
-    },
-    {
-      "timestamp": "2025-12-01T22:07:32.766185",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 3943,
-      "output_tokens": 156,
-      "duration_ms": 61615.79387506936
-    },
-    {
-      "timestamp": "2025-12-01T22:07:35.027858",
-      "type": "embedding",
-      "script": "02_02_vector_cypher_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 10
-    },
-    {
-      "timestamp": "2025-12-01T22:13:46.566538",
-      "type": "llm",
-      "script": "02_03_text2cypher_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 660,
-      "output_tokens": 32,
-      "duration_ms": 890.972709050402
-    },
-    {
-      "timestamp": "2025-12-01T22:13:47.105187",
-      "type": "llm",
-      "script": "02_03_text2cypher_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 657,
-      "output_tokens": 11,
-      "duration_ms": 420.62270804308355
-    },
-    {
-      "timestamp": "2025-12-01T22:13:48.403396",
-      "type": "llm",
-      "script": "02_03_text2cypher_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 222,
-      "output_tokens": 136,
-      "duration_ms": 1205.403459025547
-    },
-    {
-      "timestamp": "2025-12-01T22:13:49.196799",
-      "type": "llm",
-      "script": "02_03_text2cypher_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 662,
-      "output_tokens": 29,
-      "duration_ms": 791.3874170044437
-    },
-    {
-      "timestamp": "2025-12-01T22:14:00.881961",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:14:01.406878",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:14:49.607664",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 4056,
-      "output_tokens": 63,
-      "duration_ms": 48051.04566703085
-    },
-    {
-      "timestamp": "2025-12-01T22:14:50.019735",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 6
-    },
-    {
-      "timestamp": "2025-12-01T22:15:51.184270",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 3943,
-      "output_tokens": 153,
-      "duration_ms": 59809.01195795741
-    },
-    {
-      "timestamp": "2025-12-01T22:15:52.897386",
-      "type": "embedding",
-      "script": "02_02_vector_cypher_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 10
-    },
-    {
-      "timestamp": "2025-12-01T22:20:10.441660",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:20:10.952457",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:20:12.554372",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 4056,
-      "output_tokens": 71,
-      "duration_ms": 1466.6838330449536
-    },
-    {
-      "timestamp": "2025-12-01T22:20:12.700584",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 6
-    },
-    {
-      "timestamp": "2025-12-01T22:21:14.564067",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 3943,
-      "output_tokens": 169,
-      "duration_ms": 61612.6391250873
-    },
-    {
-      "timestamp": "2025-12-01T22:21:16.766996",
-      "type": "embedding",
-      "script": "02_02_vector_cypher_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 10
-    },
-    {
-      "timestamp": "2025-12-01T22:25:05.846524",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:25:06.351041",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:25:07.893357",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 4056,
-      "output_tokens": 62,
-      "duration_ms": 1340.8822088968009
-    },
-    {
-      "timestamp": "2025-12-01T22:25:08.077976",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 6
-    },
-    {
-      "timestamp": "2025-12-01T22:26:10.012830",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 3943,
-      "output_tokens": 154,
-      "duration_ms": 61701.240207999945
-    },
-    {
-      "timestamp": "2025-12-01T22:26:11.735415",
-      "type": "embedding",
-      "script": "02_02_vector_cypher_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 10
-    },
-    {
-      "timestamp": "2025-12-01T22:32:28.844598",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:32:29.328376",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 8
-    },
-    {
-      "timestamp": "2025-12-01T22:32:30.966098",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 4056,
-      "output_tokens": 57,
-      "duration_ms": 1387.6798340352252
-    },
-    {
-      "timestamp": "2025-12-01T22:32:31.100980",
-      "type": "embedding",
-      "script": "02_01_vector_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 6
-    },
-    {
-      "timestamp": "2025-12-01T22:33:33.335226",
-      "type": "llm",
-      "script": "02_01_vector_retriever",
-      "model": "gpt-4o-mini",
-      "input_tokens": 3943,
-      "output_tokens": 269,
-      "duration_ms": 61976.12408304121
-    },
-    {
-      "timestamp": "2025-12-01T22:33:35.066220",
-      "type": "embedding",
-      "script": "02_02_vector_cypher_retriever",
-      "model": "text-embedding-ada-002",
-      "num_texts": 1,
-      "tokens": 10
-    },
-    {
-      "timestamp": "2025-12-01T22:34:34.842051",
+      "timestamp": "2025-12-01T23:28:10.333886",
       "type": "llm",
       "script": "02_02_vector_cypher_retriever",
       "model": "gpt-4o-mini",
       "input_tokens": 4808,
-      "output_tokens": 206,
-      "duration_ms": 59483.33383304998
+      "output_tokens": 191,
+      "duration_ms": 44932.68824997358
     },
     {
-      "timestamp": "2025-12-01T22:34:35.498928",
+      "timestamp": "2025-12-01T23:28:10.969816",
       "type": "embedding",
       "script": "02_02_vector_cypher_retriever",
       "model": "text-embedding-ada-002",
       "num_texts": 1,
       "tokens": 11
+    },
+    {
+      "timestamp": "2025-12-01T23:29:10.973649",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 11173,
+      "output_tokens": 143,
+      "duration_ms": 59806.948582991026
+    },
+    {
+      "timestamp": "2025-12-01T23:29:12.037581",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 7
+    },
+    {
+      "timestamp": "2025-12-01T23:29:13.765459",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 244,
+      "output_tokens": 202,
+      "duration_ms": 1639.368874952197
+    },
+    {
+      "timestamp": "2025-12-01T23:29:16.142245",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 660,
+      "output_tokens": 32,
+      "duration_ms": 772.9542499873787
+    },
+    {
+      "timestamp": "2025-12-01T23:29:37.327778",
+      "type": "embedding",
+      "script": "03_02_vector_graph_agent",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:30:10.114901",
+      "type": "llm",
+      "script": "03_03_text2cypher_agent",
+      "model": "gpt-4o-mini",
+      "input_tokens": 704,
+      "output_tokens": 34,
+      "duration_ms": 22294.063042034395
+    },
+    {
+      "timestamp": "2025-12-01T23:30:14.544014",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 5
+    },
+    {
+      "timestamp": "2025-12-01T23:30:14.806734",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:30:15.048720",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:30:15.290681",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:30:15.534546",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:30:15.844988",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 4
+    },
+    {
+      "timestamp": "2025-12-01T23:30:16.068026",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 4
+    },
+    {
+      "timestamp": "2025-12-01T23:30:16.285150",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 4
     }
   ],
   "totals": {
-    "llm_input": 63002,
-    "llm_output": 2103,
-    "embedding": 235
-  }
+    "llm_input": 29644,
+    "llm_output": 910,
+    "embedding": 104
+  },
+  "failures": []
 }
