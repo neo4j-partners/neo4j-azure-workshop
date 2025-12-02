@@ -248,14 +248,14 @@ uv run python scripts/scale_deploy.py destroy --all --yes
 
 | Model | TPM (per deployment) |
 |-------|---------------------|
-| gpt-4o-mini | 5K |
+| gpt-4o-mini | 10K |
 | text-embedding-ada-002 | 5K |
 
 ### Subscription Limits
 
 TPM quota is **shared across all deployments** in a subscription:
-- 3 environments × 5K TPM = 15K TPM used from quota
-- 10 environments × 5K TPM = 50K TPM used from quota
+- 3 environments × 10K TPM = 30K TPM used from quota
+- 10 environments × 10K TPM = 100K TPM used from quota
 
 If you hit rate limits:
 1. Reduce number of concurrent environments

@@ -462,6 +462,7 @@ def cmd_destroy(args: argparse.Namespace) -> int:
     for env_name in targets:
         env_status = summary["environments"][env_name]
         rg = env_status.get("resource_group")
+        region = env_status.get("region", "eastus2")
 
         print(f"\nDestroying: {env_name}")
 
@@ -479,6 +480,10 @@ def cmd_destroy(args: argparse.Namespace) -> int:
         env_dir = DEPLOYMENTS_DIR / env_name
         if env_dir.exists():
             shutil.rmtree(env_dir)
+
+        # Purge soft-deleted Cognitive Services for this resource group
+        if rg:
+            purge_soft_deleted_cognitive_services(rg, region)
 
         del summary["environments"][env_name]
         save_summary(summary)

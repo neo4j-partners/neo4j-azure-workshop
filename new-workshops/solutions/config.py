@@ -7,6 +7,7 @@ Microsoft Foundry integration, and configuration management.
 
 import json
 import threading
+import time
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -192,8 +193,9 @@ class TokenCounter:
         input_text: str,
         output_text: str,
         model: str,
+        duration_ms: float | None = None,
     ) -> dict:
-        """Record an LLM call with token counts."""
+        """Record an LLM call with token counts and timing."""
         input_tokens = self.count_tokens(input_text)
         output_tokens = self.count_tokens(output_text)
 
@@ -205,6 +207,9 @@ class TokenCounter:
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
         }
+
+        if duration_ms is not None:
+            entry["duration_ms"] = duration_ms
 
         with self._lock:
             data = self._load_usage()
@@ -271,33 +276,59 @@ class TrackedLLM(OpenAILLM):
         super().__init__(*args, **kwargs)
         self._script_name = script_name
 
-    def invoke(self, input: str, **kwargs: Any) -> LLMResponse:
-        """Invoke LLM and track tokens."""
-        response = super().invoke(input, **kwargs)
+    def invoke(
+        self,
+        input: str,
+        message_history: Any = None,
+        system_instruction: str | None = None,
+    ) -> LLMResponse:
+        """Invoke LLM and track tokens and timing."""
+        start_time = time.perf_counter()
+        response = super().invoke(
+            input,
+            message_history=message_history,
+            system_instruction=system_instruction,
+        )
+        duration_ms = (time.perf_counter() - start_time) * 1000
+
         # Include system_instruction in token count if provided
         full_input = input
-        if "system_instruction" in kwargs and kwargs["system_instruction"]:
-            full_input = kwargs["system_instruction"] + "\n" + input
+        if system_instruction:
+            full_input = system_instruction + "\n" + input
         token_counter.record_llm_call(
             script=self._script_name,
             input_text=full_input,
             output_text=response.content,
             model=self.model_name,
+            duration_ms=duration_ms,
         )
         return response
 
-    async def ainvoke(self, input: str, **kwargs: Any) -> LLMResponse:
-        """Async invoke LLM and track tokens."""
-        response = await super().ainvoke(input, **kwargs)
+    async def ainvoke(
+        self,
+        input: str,
+        message_history: Any = None,
+        system_instruction: str | None = None,
+    ) -> LLMResponse:
+        """Async invoke LLM and track tokens and timing."""
+        start_time = time.perf_counter()
+        response = await super().ainvoke(
+            input,
+            message_history=message_history,
+            system_instruction=system_instruction,
+        )
+        duration_ms = (time.perf_counter() - start_time) * 1000
+
         # Include system_instruction in token count if provided
         full_input = input
-        if "system_instruction" in kwargs and kwargs["system_instruction"]:
-            full_input = kwargs["system_instruction"] + "\n" + input
+        if system_instruction:
+            full_input = system_instruction + "\n" + input
         token_counter.record_llm_call(
             script=self._script_name,
             input_text=full_input,
             output_text=response.content,
             model=self.model_name,
+            duration_ms=duration_ms,
         )
         return response
 

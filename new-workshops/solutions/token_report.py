@@ -3,7 +3,7 @@
 Token Usage Report Generator
 
 Reads the token_usage.json file and produces a detailed report of token
-consumption across all workshop solution scripts.
+consumption across all workshop solution scripts, including LLM call timing.
 
 Usage:
     uv run python solutions/token_report.py           # Show report
@@ -44,6 +44,23 @@ def format_number(n: int) -> str:
     return f"{n:,}"
 
 
+def format_ms(ms: float) -> str:
+    """Format milliseconds nicely."""
+    if ms >= 1000:
+        return f"{ms/1000:.2f}s"
+    return f"{ms:.0f}ms"
+
+
+def calculate_percentile(values: list[float], percentile: float) -> float:
+    """Calculate the given percentile from a sorted list of values."""
+    if not values:
+        return 0.0
+    sorted_values = sorted(values)
+    index = int(len(sorted_values) * percentile / 100)
+    index = min(index, len(sorted_values) - 1)
+    return sorted_values[index]
+
+
 def generate_report(data: dict) -> str:
     """Generate a formatted token usage report."""
     lines = []
@@ -74,6 +91,33 @@ def generate_report(data: dict) -> str:
         lines.append("No individual sessions recorded yet.")
         lines.append("")
         return "\n".join(lines)
+
+    # Collect LLM timing data
+    llm_durations = []
+    script_durations = defaultdict(list)
+
+    for session in sessions:
+        if session.get("type") == "llm" and "duration_ms" in session:
+            duration = session["duration_ms"]
+            llm_durations.append(duration)
+            script = session.get("script", "unknown")
+            script_durations[script].append(duration)
+
+    # LLM Timing Statistics
+    if llm_durations:
+        lines.append("")
+        lines.append("LLM CALL TIMING")
+        lines.append("-" * 40)
+        avg_ms = sum(llm_durations) / len(llm_durations)
+        min_ms = min(llm_durations)
+        max_ms = max(llm_durations)
+        p99_ms = calculate_percentile(llm_durations, 99)
+
+        lines.append(f"  Total LLM Calls:      {len(llm_durations):>12}")
+        lines.append(f"  Average:              {format_ms(avg_ms):>12}")
+        lines.append(f"  Min:                  {format_ms(min_ms):>12}")
+        lines.append(f"  Max:                  {format_ms(max_ms):>12}")
+        lines.append(f"  P99:                  {format_ms(p99_ms):>12}")
 
     # Breakdown by script
     script_usage = defaultdict(lambda: {"llm_input": 0, "llm_output": 0, "embedding": 0, "calls": 0})
@@ -107,13 +151,31 @@ def generate_report(data: dict) -> str:
 
     for script in sorted(script_usage.keys()):
         usage = script_usage[script]
-        script_total = usage["llm_input"] + usage["llm_output"] + usage["embedding"]
         lines.append(
             f"{script:<35} "
             f"{format_number(usage['llm_input']):>10} "
             f"{format_number(usage['llm_output']):>10} "
             f"{format_number(usage['embedding']):>10}"
         )
+
+    # Timing by Script (if we have timing data)
+    if script_durations:
+        lines.append("")
+        lines.append("TIMING BY SCRIPT")
+        lines.append("-" * 70)
+        lines.append(f"{'Script':<35} {'Calls':>6} {'Avg':>10} {'Min':>10} {'Max':>10}")
+        lines.append("-" * 70)
+
+        for script in sorted(script_durations.keys()):
+            durations = script_durations[script]
+            avg = sum(durations) / len(durations)
+            lines.append(
+                f"{script:<35} "
+                f"{len(durations):>6} "
+                f"{format_ms(avg):>10} "
+                f"{format_ms(min(durations)):>10} "
+                f"{format_ms(max(durations)):>10}"
+            )
 
     # By Model
     lines.append("")
@@ -143,14 +205,16 @@ def generate_report(data: dict) -> str:
 
         session_type = session.get("type", "?")
         script = session.get("script", "unknown")
-        model = session.get("model", "?")
+        duration_str = ""
 
         if session_type == "llm":
             tokens = session.get("input_tokens", 0) + session.get("output_tokens", 0)
-            lines.append(f"  {timestamp}  LLM   {script:<25} {format_number(tokens):>8} tokens")
+            if "duration_ms" in session:
+                duration_str = f" ({format_ms(session['duration_ms'])})"
+            lines.append(f"  {timestamp}  LLM   {script:<20} {format_number(tokens):>8} tokens{duration_str}")
         else:
             tokens = session.get("tokens", 0)
-            lines.append(f"  {timestamp}  EMBED {script:<25} {format_number(tokens):>8} tokens")
+            lines.append(f"  {timestamp}  EMBED {script:<20} {format_number(tokens):>8} tokens")
 
     lines.append("")
     lines.append("=" * 70)
