@@ -14,8 +14,15 @@ from config import get_tracked_embedder, get_tracked_llm, get_neo4j_driver
 
 # Retrieval query 1: Company + Risk context
 COMPANY_RISK_QUERY = """
-MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)-[:FACES_RISK]->(risk:RiskFactor)
-RETURN company.name AS company, collect(DISTINCT risk.name)[0..20] AS risks, node.text AS context
+MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)
+WITH node, company, COLLECT {
+  MATCH (company)-[:FACES_RISK]->(risk:RiskFactor)
+  RETURN risk.name
+  LIMIT 20
+} AS risks
+RETURN company.name AS company,
+       risks AS risks,
+       node.text AS context
 """
 
 # Retrieval query 2: Asset Manager context

@@ -1,0 +1,229 @@
+{
+  "sessions": [
+    {
+      "timestamp": "2025-12-01T23:43:32.313989",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T23:43:32.707887",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T23:43:34.327757",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 60,
+      "duration_ms": 1462.0055420091376
+    },
+    {
+      "timestamp": "2025-12-01T23:43:34.506736",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T23:43:36.092392",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 145,
+      "duration_ms": 1391.8792499462143
+    },
+    {
+      "timestamp": "2025-12-01T23:43:37.621132",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T23:43:41.372614",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4808,
+      "output_tokens": 206,
+      "duration_ms": 3598.251292016357
+    },
+    {
+      "timestamp": "2025-12-01T23:43:41.677504",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 11
+    },
+    {
+      "timestamp": "2025-12-01T23:44:35.443329",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4007,
+      "output_tokens": 51,
+      "duration_ms": 53553.969999891706
+    },
+    {
+      "timestamp": "2025-12-01T23:44:36.039624",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 7
+    },
+    {
+      "timestamp": "2025-12-01T23:44:37.231767",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 244,
+      "output_tokens": 83,
+      "duration_ms": 1099.6909169480205
+    },
+    {
+      "timestamp": "2025-12-01T23:44:39.727591",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 705,
+      "output_tokens": 39,
+      "duration_ms": 1079.708458040841
+    },
+    {
+      "timestamp": "2025-12-01T23:44:40.827413",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 702,
+      "output_tokens": 19,
+      "duration_ms": 997.7852089796215
+    },
+    {
+      "timestamp": "2025-12-01T23:44:48.164217",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 1077,
+      "output_tokens": 231,
+      "duration_ms": 7238.67158300709
+    },
+    {
+      "timestamp": "2025-12-01T23:44:49.082423",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 707,
+      "output_tokens": 46,
+      "duration_ms": 913.4836250450462
+    },
+    {
+      "timestamp": "2025-12-01T23:44:50.647563",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 28,
+      "output_tokens": 86,
+      "duration_ms": 1181.9295840105042
+    },
+    {
+      "timestamp": "2025-12-01T23:45:04.311868",
+      "type": "embedding",
+      "script": "03_02_vector_graph_agent",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 2
+    },
+    {
+      "timestamp": "2025-12-01T23:45:16.662686",
+      "type": "llm",
+      "script": "03_03_text2cypher_agent",
+      "model": "gpt-4o-mini",
+      "input_tokens": 724,
+      "output_tokens": 35,
+      "duration_ms": 826.2996659614146
+    },
+    {
+      "timestamp": "2025-12-01T23:45:20.765960",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 5
+    },
+    {
+      "timestamp": "2025-12-01T23:45:21.021719",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:45:21.243735",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:45:21.485602",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:45:21.804225",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 3
+    },
+    {
+      "timestamp": "2025-12-01T23:45:22.103296",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 4
+    },
+    {
+      "timestamp": "2025-12-01T23:45:22.335490",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 4
+    },
+    {
+      "timestamp": "2025-12-01T23:45:22.543449",
+      "type": "embedding",
+      "script": "05_02_hybrid_search",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 4
+    }
+  ],
+  "totals": {
+    "llm_input": 21001,
+    "llm_output": 1001,
+    "embedding": 81
+  },
+  "failures": []
+}

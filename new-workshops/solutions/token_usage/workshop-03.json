@@ -1,0 +1,121 @@
+{
+  "sessions": [
+    {
+      "timestamp": "2025-12-01T23:45:24.332150",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T23:45:24.614139",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 8
+    },
+    {
+      "timestamp": "2025-12-01T23:45:27.211179",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4056,
+      "output_tokens": 67,
+      "duration_ms": 2499.960207962431
+    },
+    {
+      "timestamp": "2025-12-01T23:45:27.506184",
+      "type": "embedding",
+      "script": "02_01_vector_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 6
+    },
+    {
+      "timestamp": "2025-12-01T23:45:29.563080",
+      "type": "llm",
+      "script": "02_01_vector_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 3943,
+      "output_tokens": 166,
+      "duration_ms": 1909.7659999970347
+    },
+    {
+      "timestamp": "2025-12-01T23:45:32.176167",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 10
+    },
+    {
+      "timestamp": "2025-12-01T23:45:36.679520",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4808,
+      "output_tokens": 190,
+      "duration_ms": 4346.947583020665
+    },
+    {
+      "timestamp": "2025-12-01T23:45:36.976591",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 11
+    },
+    {
+      "timestamp": "2025-12-01T23:46:28.804478",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 4007,
+      "output_tokens": 104,
+      "duration_ms": 51677.634999970905
+    },
+    {
+      "timestamp": "2025-12-01T23:46:29.514728",
+      "type": "embedding",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "text-embedding-ada-002",
+      "num_texts": 1,
+      "tokens": 7
+    },
+    {
+      "timestamp": "2025-12-01T23:46:32.803029",
+      "type": "llm",
+      "script": "02_02_vector_cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 244,
+      "output_tokens": 298,
+      "duration_ms": 3192.0579589204863
+    },
+    {
+      "timestamp": "2025-12-01T23:46:35.032315",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 705,
+      "output_tokens": 38,
+      "duration_ms": 911.0623329179361
+    },
+    {
+      "timestamp": "2025-12-01T23:46:35.618311",
+      "type": "llm",
+      "script": "02_03_text2cypher_retriever",
+      "model": "gpt-4o-mini",
+      "input_tokens": 702,
+      "output_tokens": 19,
+      "duration_ms": 492.76095803361386
+    }
+  ],
+  "totals": {
+    "llm_input": 18465,
+    "llm_output": 882,
+    "embedding": 50
+  },
+  "failures": []
+}
