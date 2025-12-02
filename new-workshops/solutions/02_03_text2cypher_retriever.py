@@ -68,7 +68,8 @@ def demo_rag_search(llm, retriever: Text2CypherRetriever, query: str) -> None:
     print(f"Query: {query}\n")
 
     rag = GraphRAG(llm=llm, retriever=retriever)
-    response = rag.search(query, retriever_config={"top_k": 5}, return_context=True)
+    # Note: Text2CypherRetriever doesn't use top_k - results are limited via LIMIT in the prompt
+    response = rag.search(query, return_context=True)
 
     print(f"Answer: {response.answer}")
     print(f"\nGenerated Cypher: {response.retriever_result.metadata['cypher']}")

@@ -180,6 +180,8 @@ async def main():
         config.uri,
         auth=(config.username, config.password)
     )
+    llm = None
+    embedder = None
 
     try:
         driver.verify_connectivity()
@@ -229,6 +231,11 @@ async def main():
         find_chunks_for_entity(driver, "Apple")
 
     finally:
+        # Close clients to prevent "Event loop is closed" errors
+        if llm:
+            llm.close()
+        if embedder:
+            embedder.close()
         driver.close()
         print("\n\nConnection closed.")
 

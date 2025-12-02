@@ -211,6 +211,7 @@ def main() -> None:
         config.uri,
         auth=(config.username, config.password),
     )
+    embedder = None
 
     try:
         driver.verify_connectivity()
@@ -261,6 +262,9 @@ def main() -> None:
         search_method_comparison(hybrid_retriever, "Microsoft cloud computing strategy")
 
     finally:
+        # Close clients to prevent "Event loop is closed" errors
+        if embedder:
+            embedder.close()
         driver.close()
         print("\nConnection closed")
 

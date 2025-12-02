@@ -164,6 +164,7 @@ async def main():
         config.uri,
         auth=(config.username, config.password)
     )
+    embedder = None
 
     try:
         driver.verify_connectivity()
@@ -200,6 +201,9 @@ async def main():
         demo_search(driver, embedder)
 
     finally:
+        # Close clients to prevent "Event loop is closed" errors
+        if embedder:
+            embedder.close()
         driver.close()
         print("\n\nConnection closed.")
 

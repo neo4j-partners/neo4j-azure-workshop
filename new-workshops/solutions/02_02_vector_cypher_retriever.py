@@ -20,8 +20,15 @@ RETURN company.name AS company, collect(DISTINCT risk.name)[0..20] AS risks, nod
 
 # Retrieval query 2: Asset Manager context
 ASSET_MANAGER_QUERY = """
-MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)-[:OWNS]-(manager:AssetManager)
-RETURN company.name AS company, manager.managerName AS AssetManagerWithSharesInCompany, node.text AS context
+MATCH (node)-[:FROM_DOCUMENT]-(doc:Document)-[:FILED]-(company:Company)
+WITH node, company, COLLECT {
+  MATCH (company)-[:OWNS]-(manager:AssetManager)
+  RETURN manager.managerName
+  LIMIT 5
+} AS managers
+RETURN company.name AS company,
+       managers AS AssetManagersWithSharesInCompany,
+       node.text AS context
 """
 
 # Retrieval query 3: Shared Risks between companies
